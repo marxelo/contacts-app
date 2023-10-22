@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'database_helper.dart';
 
+const double sizedBoxHeight = 20;
+final _formKey = GlobalKey<FormState>();
+
 class FormPage extends StatefulWidget {
   const FormPage({Key? key, this.contactId}) : super(key: key);
   final int? contactId;
@@ -14,6 +17,15 @@ class _FormPageState extends State<FormPage> {
   final _phoneController = TextEditingController();
   final _emailController = TextEditingController();
   final _photoController = TextEditingController();
+
+  String? validateEmail(String? email) {
+    RegExp emailRegex = RegExp(r'^[\w\.-]+@[\w-]+\.\w{2,3}(\.\w{2,3})?$');
+    final isEmailValid = emailRegex.hasMatch(email ?? '');
+    if (!isEmailValid) {
+      return 'Informe um e-mail válido';
+    }
+    return null;
+  }
 
   void fetchData() async {
     Map<String, dynamic>? data;
@@ -78,38 +90,113 @@ class _FormPageState extends State<FormPage> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            TextFormField(
-              controller: _nameController,
-              decoration: const InputDecoration(hintText: 'nome'),
+        child: Form(
+          key: _formKey,
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                TextFormField(
+                  controller: _nameController,
+                  decoration: InputDecoration(
+                    hintText: 'Nome',
+                    border: const OutlineInputBorder(),
+                    prefixIcon: const Icon(Icons.person_rounded),
+                    prefixIconColor: MaterialStateColor.resolveWith(
+                        (Set<MaterialState> states) {
+                      if (states.contains(MaterialState.focused)) {
+                        return Colors.green;
+                      }
+                      if (states.contains(MaterialState.error)) {
+                        return Colors.red;
+                      }
+                      return Colors.grey;
+                    }),
+                  ),
+                  enableSuggestions: true,
+                  keyboardType: TextInputType.name,
+                  validator: (value) => (value != null && value.trim().isEmpty)
+                      ? 'Nome deve ser preenchido'
+                      : null,
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                ),
+                const SizedBox(height: sizedBoxHeight),
+                TextFormField(
+                  controller: _phoneController,
+                  decoration: InputDecoration(
+                    hintText: 'Telefone',
+                    border: const OutlineInputBorder(),
+                    prefixIcon: const Icon(Icons.phone_rounded),
+                    prefixIconColor: MaterialStateColor.resolveWith(
+                        (Set<MaterialState> states) {
+                      if (states.contains(MaterialState.focused)) {
+                        return Colors.green;
+                      }
+                      if (states.contains(MaterialState.error)) {
+                        return Colors.red;
+                      }
+                      return Colors.grey;
+                    }),
+                  ),
+                  keyboardType: TextInputType.phone,
+                ),
+                const SizedBox(height: sizedBoxHeight),
+                TextFormField(
+                  controller: _emailController,
+                  decoration: InputDecoration(
+                    hintText: 'E-mail',
+                    border: const OutlineInputBorder(),
+                    prefixIcon: const Icon(Icons.email_rounded),
+                    prefixIconColor: MaterialStateColor.resolveWith(
+                        (Set<MaterialState> states) {
+                      if (states.contains(MaterialState.focused)) {
+                        return Colors.green;
+                      }
+                      if (states.contains(MaterialState.error)) {
+                        return Colors.red;
+                      }
+                      return Colors.grey;
+                    }),
+                  ),
+                  keyboardType: TextInputType.emailAddress,
+                  validator: validateEmail,
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                ),
+                const SizedBox(height: sizedBoxHeight),
+                TextFormField(
+                  controller: _photoController,
+                  decoration: InputDecoration(
+                    hintText: 'Photo',
+                    border: const OutlineInputBorder(),
+                    prefixIcon: const Icon(Icons.photo_rounded),
+                    prefixIconColor: MaterialStateColor.resolveWith(
+                        (Set<MaterialState> states) {
+                      if (states.contains(MaterialState.focused)) {
+                        return Colors.green;
+                      }
+                      if (states.contains(MaterialState.error)) {
+                        return Colors.red;
+                      }
+                      return Colors.grey;
+                    }),
+                  ),
+                ),
+                const SizedBox(height: sizedBoxHeight),
+                ElevatedButton(
+                  onPressed: () {
+                    if (widget.contactId != null) {
+                      _updateData(context);
+                    } else {
+                      _saveData();
+                    }
+                  },
+                  child: Text(widget.contactId == null
+                      ? "Salvar Contato"
+                      : "Atualizar Contato"),
+                ),
+              ],
             ),
-            TextFormField(
-              controller: _phoneController,
-              decoration: const InputDecoration(hintText: 'Telefone'),
-            ),
-            TextFormField(
-              controller: _emailController,
-              decoration: const InputDecoration(hintText: 'e-mail'),
-            ),
-            TextFormField(
-              controller: _photoController,
-              decoration: const InputDecoration(hintText: 'photo'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                if (widget.contactId != null) {
-                  _updateData(context);
-                } else {
-                  _saveData();
-                }
-              },
-              child: Text(widget.contactId == null
-                  ? "Salvar Contato"
-                  : "Atualizar Contato"),
-            ),
-          ],
+          ),
         ),
       ),
     );
