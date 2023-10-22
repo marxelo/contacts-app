@@ -34,7 +34,30 @@ class DatabaseHelper {
 
   static Future<List<Map<String, dynamic>>> getData() async {
     final db = await _openDatabase();
-    
+
     return await db.query('contacts', orderBy: 'name');
+  }
+
+  static Future<int> deleteData(int id) async {
+    final db = await _openDatabase();
+
+    return await db.delete('contacts', where: 'id = ?', whereArgs: [id]);
+  }
+
+  static Future<Map<String, dynamic>?> getSingleData(int id) async {
+    final db = await _openDatabase();
+    List<Map<String, dynamic>> result = await db.query(
+      'contacts',
+      where: 'id = ?',
+      whereArgs: [id],
+      limit: 1,
+    );
+
+    return result.isNotEmpty ? result.first : null;
+  }
+
+  static Future<int> updateData(int id, Map<String, dynamic> data) async {
+    final db = await _openDatabase();
+    return await db.update('contacts', data, where: 'id = ?', whereArgs: [id]);
   }
 }

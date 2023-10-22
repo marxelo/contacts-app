@@ -1,4 +1,5 @@
 import 'package:contacts_app/database_helper.dart';
+import 'package:contacts_app/update_contact.dart';
 import 'package:flutter/material.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -27,7 +28,18 @@ class _MyHomePageState extends State<MyHomePage> {
 
     int insertId =
         await DatabaseHelper.insertContact(name, phone, email, photo);
-    _fetchContacts();
+
+    final List<Map<String, dynamic>> updatedData =
+        await DatabaseHelper.getData();
+
+    setState(() {
+      dataList = updatedData;
+    });
+
+    _nameController.text = '';
+    _phoneController.text = '';
+    _emailController.text = '';
+    _photoController.text = '';
   }
 
   @override
@@ -42,6 +54,26 @@ class _MyHomePageState extends State<MyHomePage> {
 
     setState(() {
       dataList = contactList;
+    });
+  }
+
+  void _delete(int id) async {
+    int dId = await DatabaseHelper.deleteData(id);
+
+    final List<Map<String, dynamic>> updatedData =
+        await DatabaseHelper.getData();
+
+    setState(() {
+      dataList = updatedData;
+    });
+  }
+
+  void fetchData() async {
+    final List<Map<String, dynamic>> updatedData =
+        await DatabaseHelper.getData();
+
+    setState(() {
+      dataList = updatedData;
     });
   }
 
@@ -109,6 +141,39 @@ class _MyHomePageState extends State<MyHomePage> {
                       subtitle: Text(dataList[index]['phone'] +
                           '\n' +
                           dataList[index]['email']),
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => UpdateContact(
+                                      contactId: dataList[index]['id']),
+                                ),
+                              ).then((result) {
+                                if (result == true) {
+                                  fetchData();
+                                }
+                              });
+                            },
+                            icon: const Icon(
+                              Icons.edit_outlined,
+                              color: Colors.green,
+                            ),
+                          ),
+                          IconButton(
+                            onPressed: () {
+                              _delete(dataList[index]['id']);
+                            },
+                            icon: const Icon(
+                              Icons.delete_outline,
+                              color: Colors.red,
+                            ),
+                          ),
+                        ],
+                      ),
                     );
                   }),
             ),
