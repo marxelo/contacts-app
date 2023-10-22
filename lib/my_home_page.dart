@@ -17,6 +17,8 @@ class _MyHomePageState extends State<MyHomePage> {
   final _emailController = TextEditingController();
   final _photoController = TextEditingController();
 
+  List<Map<String, dynamic>> dataList = [];
+
   void _saveData() async {
     final name = _nameController.text;
     final phone = _phoneController.text;
@@ -25,7 +27,22 @@ class _MyHomePageState extends State<MyHomePage> {
 
     int insertId =
         await DatabaseHelper.insertContact(name, phone, email, photo);
-    print(insertId);
+    _fetchContacts();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchContacts();
+  }
+
+  void _fetchContacts() async {
+    final List<Map<String, dynamic>> contactList =
+        await DatabaseHelper.getData();
+
+    setState(() {
+      dataList = contactList;
+    });
   }
 
   @override
@@ -52,26 +69,49 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: Center(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            TextFormField(
-              controller: _nameController,
-              decoration: const InputDecoration(hintText: 'nome'),
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  TextFormField(
+                    controller: _nameController,
+                    decoration: const InputDecoration(hintText: 'nome'),
+                  ),
+                  TextFormField(
+                    controller: _phoneController,
+                    decoration: const InputDecoration(hintText: 'Telefone'),
+                  ),
+                  TextFormField(
+                    controller: _emailController,
+                    decoration: const InputDecoration(hintText: 'e-mail'),
+                  ),
+                  TextFormField(
+                    controller: _photoController,
+                    decoration: const InputDecoration(hintText: 'photo'),
+                  ),
+                  ElevatedButton(
+                      onPressed: _saveData,
+                      child: const Text('Salvar Contato')),
+                ],
+              ),
             ),
-            TextFormField(
-              controller: _phoneController,
-              decoration: const InputDecoration(hintText: 'Telefone'),
+            const SizedBox(
+              height: 30,
             ),
-            TextFormField(
-              controller: _emailController,
-              decoration: const InputDecoration(hintText: 'e-mail'),
+            Expanded(
+              child: ListView.builder(
+                  itemCount: dataList.length,
+                  itemBuilder: (context, index) {
+                    return ListTile(
+                      title: Text(dataList[index]['name']),
+                      subtitle: Text(dataList[index]['phone'] +
+                          '\n' +
+                          dataList[index]['email']),
+                    );
+                  }),
             ),
-            TextFormField(
-              controller: _photoController,
-              decoration: const InputDecoration(hintText: 'photo'),
-            ),
-            ElevatedButton(
-                onPressed: _saveData, child: const Text('Salvar Contato')),
           ],
         ),
       ),

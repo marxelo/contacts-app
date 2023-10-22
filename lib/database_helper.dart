@@ -32,6 +32,9 @@ class DatabaseHelper {
     return await db.insert('contacts', data);
   }
 
-
-  // static Future
+  static Future<List<Map<String, dynamic>>> getData() async {
+    final db = await _openDatabase();
+    
+    return await db.query('contacts', orderBy: 'name');
+  }
 }
