@@ -1,24 +1,26 @@
 import 'package:flutter/material.dart';
-import 'package:sqflite/sqflite.dart';
 import 'database_helper.dart';
 
-class UpdateContact extends StatefulWidget {
-  const UpdateContact({Key? key, required this.contactId}) : super(key: key);
-  final int contactId;
+class FormPage extends StatefulWidget {
+  const FormPage({Key? key, this.contactId}) : super(key: key);
+  final int? contactId;
 
   @override
-  State<UpdateContact> createState() => _UpdateContactState();
+  State<FormPage> createState() => _FormPageState();
 }
 
-class _UpdateContactState extends State<UpdateContact> {
+class _FormPageState extends State<FormPage> {
   final _nameController = TextEditingController();
   final _phoneController = TextEditingController();
   final _emailController = TextEditingController();
   final _photoController = TextEditingController();
 
   void fetchData() async {
-    Map<String, dynamic>? data =
-        await DatabaseHelper.getSingleData(widget.contactId);
+    Map<String, dynamic>? data;
+
+    if (widget.contactId != null) {
+      data = await DatabaseHelper.getSingleData(widget.contactId!);
+    }
 
     if (data != null) {
       _nameController.text = data['name'];
@@ -42,7 +44,20 @@ class _UpdateContactState extends State<UpdateContact> {
       'photo': _photoController.text,
     };
 
-    int id = await DatabaseHelper.updateData(widget.contactId, data);
+    if (widget.contactId != null) {
+      await DatabaseHelper.updateData(widget.contactId!, data);
+      Navigator.pop(context, true);
+    }
+  }
+
+  void _saveData() async {
+    final name = _nameController.text;
+    final phone = _phoneController.text;
+    final email = _emailController.text;
+    final photo = _photoController.text;
+
+    await DatabaseHelper.insertContact(name, phone, email, photo);
+
     Navigator.pop(context, true);
   }
 
@@ -83,10 +98,17 @@ class _UpdateContactState extends State<UpdateContact> {
               decoration: const InputDecoration(hintText: 'photo'),
             ),
             ElevatedButton(
-                onPressed: () {
+              onPressed: () {
+                if (widget.contactId != null) {
                   _updateData(context);
-                },
-                child: const Text('Atualizar Contato')),
+                } else {
+                  _saveData();
+                }
+              },
+              child: Text(widget.contactId == null
+                  ? "Salvar Contato"
+                  : "Atualizar Contato"),
+            ),
           ],
         ),
       ),

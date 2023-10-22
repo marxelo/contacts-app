@@ -1,5 +1,5 @@
 import 'package:contacts_app/database_helper.dart';
-import 'package:contacts_app/update_contact.dart';
+import 'package:contacts_app/form_page.dart';
 import 'package:flutter/material.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -12,35 +12,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-  final _nameController = TextEditingController();
-  final _phoneController = TextEditingController();
-  final _emailController = TextEditingController();
-  final _photoController = TextEditingController();
-
   List<Map<String, dynamic>> dataList = [];
-
-  void _saveData() async {
-    final name = _nameController.text;
-    final phone = _phoneController.text;
-    final email = _emailController.text;
-    final photo = _photoController.text;
-
-    int insertId =
-        await DatabaseHelper.insertContact(name, phone, email, photo);
-
-    final List<Map<String, dynamic>> updatedData =
-        await DatabaseHelper.getData();
-
-    setState(() {
-      dataList = updatedData;
-    });
-
-    _nameController.text = '';
-    _phoneController.text = '';
-    _emailController.text = '';
-    _photoController.text = '';
-  }
 
   @override
   void initState() {
@@ -78,21 +50,6 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   @override
-  void dispose() {
-    _nameController.dispose();
-    _phoneController.dispose();
-    _emailController.dispose();
-    _photoController.dispose();
-    super.dispose();
-  }
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -102,33 +59,6 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Center(
         child: Column(
           children: [
-            Padding(
-              padding: const EdgeInsets.all(12.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  TextFormField(
-                    controller: _nameController,
-                    decoration: const InputDecoration(hintText: 'nome'),
-                  ),
-                  TextFormField(
-                    controller: _phoneController,
-                    decoration: const InputDecoration(hintText: 'Telefone'),
-                  ),
-                  TextFormField(
-                    controller: _emailController,
-                    decoration: const InputDecoration(hintText: 'e-mail'),
-                  ),
-                  TextFormField(
-                    controller: _photoController,
-                    decoration: const InputDecoration(hintText: 'photo'),
-                  ),
-                  ElevatedButton(
-                      onPressed: _saveData,
-                      child: const Text('Salvar Contato')),
-                ],
-              ),
-            ),
             const SizedBox(
               height: 30,
             ),
@@ -149,7 +79,7 @@ class _MyHomePageState extends State<MyHomePage> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => UpdateContact(
+                                  builder: (context) => FormPage(
                                       contactId: dataList[index]['id']),
                                 ),
                               ).then((result) {
@@ -181,10 +111,21 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const FormPage(contactId: null),
+            ),
+          ).then((result) {
+            if (result == true) {
+              fetchData();
+            }
+          });
+        },
         tooltip: 'Increment',
         child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      ), 
     );
   }
 }
