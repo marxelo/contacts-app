@@ -30,7 +30,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _delete(int id) async {
-    int dId = await DatabaseHelper.deleteData(id);
+    await DatabaseHelper.deleteData(id);
 
     final List<Map<String, dynamic>> updatedData =
         await DatabaseHelper.getData();
@@ -91,7 +91,7 @@ class _MyHomePageState extends State<MyHomePage> {
                               });
                             },
                             icon: const Icon(
-                              Icons.edit_outlined,
+                              Icons.mode_edit_outline_outlined,
                               color: Colors.green,
                             ),
                           ),

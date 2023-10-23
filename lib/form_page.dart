@@ -1,10 +1,10 @@
 import 'dart:io';
-import 'dart:math';
 
-import 'package:contacts_app/utils.dart';
+import 'package:contacts_app/utils/constants.dart';
+import 'package:contacts_app/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'database_helper.dart';
+import 'package:contacts_app/database_helper.dart';
 
 const double sizedBoxHeight = 20;
 final _formKey = GlobalKey<FormState>();
@@ -42,7 +42,7 @@ class _FormPageState extends State<FormPage> {
     }
 
     RegExp emailRegex = RegExp(r'^[\w\.-]+@[\w-]+\.\w{2,3}(\.\w{2,3})?$');
-    final isEmailValid = emailRegex.hasMatch(email ?? '');
+    final isEmailValid = emailRegex.hasMatch(email);
     if (!isEmailValid) {
       return 'Informe um e-mail válido';
     }
@@ -101,7 +101,7 @@ class _FormPageState extends State<FormPage> {
 
     if (widget.contact != null) {
       await DatabaseHelper.updateData(widget.contact!['id'], data);
-      Navigator.pop(context, true);
+      if (context.mounted) Navigator.pop(context, true);
     }
   }
 
@@ -114,7 +114,7 @@ class _FormPageState extends State<FormPage> {
 
     await DatabaseHelper.insertContact(name, phone, email, business, photo);
 
-    Navigator.pop(context, true);
+    if (context.mounted) Navigator.pop(context, true);
   }
 
   @override
@@ -181,16 +181,16 @@ class _FormPageState extends State<FormPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     GestureDetector(
-                      child: const Icon(Icons.photo_library_rounded,
-                          color: Colors.black54),
+                      child: const Icon(Icons.photo_outlined,
+                          color: kFormPickImageIconColor, size: kFormPickImageIconSize,),
                       onTap: () {
                         _pickImage(ImageSource.gallery);
                       },
                     ),
                     const SizedBox(width: 15),
                     GestureDetector(
-                      child: const Icon(Icons.photo_camera_rounded,
-                          color: Colors.black54),
+                      child: const Icon(Icons.photo_camera_outlined,
+                          color: kFormPickImageIconColor, size: kFormPickImageIconSize,),
                       onTap: () {
                         _pickImage(ImageSource.camera);
                       },
@@ -201,8 +201,8 @@ class _FormPageState extends State<FormPage> {
                               const SizedBox(width: 15),
                               GestureDetector(
                                 child: const Icon(
-                                  Icons.delete_rounded,
-                                  color: Colors.redAccent,
+                                  Icons.delete_outline_sharp,
+                                  color: Colors.redAccent, size: kFormPickImageIconSize,
                                 ),
                                 onTap: () {
                                   _clearImage();
@@ -241,6 +241,7 @@ class _FormPageState extends State<FormPage> {
                       ? 'Nome deve ser preenchido'
                       : null,
                   autovalidateMode: AutovalidateMode.onUserInteraction,
+                  textInputAction: TextInputAction.next,
                 ),
                 const SizedBox(height: sizedBoxHeight),
                 TextFormField(
@@ -261,6 +262,7 @@ class _FormPageState extends State<FormPage> {
                     }),
                   ),
                   keyboardType: TextInputType.phone,
+                  textInputAction: TextInputAction.next,
                 ),
                 const SizedBox(height: sizedBoxHeight),
                 TextFormField(
@@ -283,6 +285,7 @@ class _FormPageState extends State<FormPage> {
                   keyboardType: TextInputType.emailAddress,
                   validator: validateEmail,
                   autovalidateMode: AutovalidateMode.onUserInteraction,
+                  textInputAction: TextInputAction.next,
                 ),
                 const SizedBox(height: sizedBoxHeight),
                 TextFormField(
@@ -302,6 +305,7 @@ class _FormPageState extends State<FormPage> {
                       return Colors.grey;
                     }),
                   ),
+                  textInputAction: TextInputAction.done,
                 ),
                 const SizedBox(height: sizedBoxHeight),
                 ElevatedButton(
