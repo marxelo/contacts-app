@@ -2,6 +2,7 @@ import 'package:sqflite/sqflite.dart';
 import "package:path/path.dart";
 
 class DatabaseHelper {
+  
   static Future<Database> _openDatabase() async {
     final databasePath = await getDatabasesPath();
     final path = join(databasePath, 'contacts_app.db');
