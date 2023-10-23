@@ -16,18 +16,20 @@ class DatabaseHelper {
     name Text,
     phone Text,
     email Text,
+    business Text,
     photo Text
   )
   ''');
   }
 
   static Future<int> insertContact(
-      String name, String phone, String email, String photo) async {
+      String name, String phone, String email, String business, String photo) async {
     final db = await _openDatabase();
     final data = {
       'name': name,
       'phone': phone,
       'email': email,
+      'business': business,
       'photo': photo,
     };
     return await db.insert('contacts', data);

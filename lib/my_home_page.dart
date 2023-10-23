@@ -80,7 +80,9 @@ class _MyHomePageState extends State<MyHomePage> {
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) => FormPage(
-                                      contactId: dataList[index]['id']),
+                                    contact: dataList[index],
+                                    title: 'Editar Contato',
+                                  ),
                                 ),
                               ).then((result) {
                                 if (result == true) {
@@ -115,7 +117,10 @@ class _MyHomePageState extends State<MyHomePage> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => const FormPage(contactId: null),
+              builder: (context) => const FormPage(
+                contact: null,
+                title: 'Adicionar Contato',
+              ),
             ),
           ).then((result) {
             if (result == true) {
@@ -125,7 +130,7 @@ class _MyHomePageState extends State<MyHomePage> {
         },
         tooltip: 'Increment',
         child: const Icon(Icons.add),
-      ), 
+      ),
     );
   }
 }

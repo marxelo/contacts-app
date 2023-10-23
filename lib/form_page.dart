@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math';
 
 import 'package:contacts_app/utils.dart';
 import 'package:flutter/material.dart';
@@ -9,8 +10,10 @@ const double sizedBoxHeight = 20;
 final _formKey = GlobalKey<FormState>();
 
 class FormPage extends StatefulWidget {
-  const FormPage({Key? key, this.contactId}) : super(key: key);
-  final int? contactId;
+  const FormPage({Key? key, this.contact, required this.title})
+      : super(key: key);
+  final Map<String, dynamic>? contact;
+  final String title;
 
   @override
   State<FormPage> createState() => _FormPageState();
@@ -20,18 +23,24 @@ class _FormPageState extends State<FormPage> {
   final _nameController = TextEditingController();
   final _phoneController = TextEditingController();
   final _emailController = TextEditingController();
-  final _photoController = TextEditingController();
+  final _businessController = TextEditingController();
 
   late Future<File> imageFile;
   late Image image;
   // late DBHelper dbHelper;
   // late List<Photo> images;
   File? imagePicked;
+  bool hasProfilePic = false;
   XFile? imageTSave;
   late String imageString = '';
   Map<String, dynamic>? data2;
+  bool contactPhotoChanged = false;
 
   String? validateEmail(String? email) {
+    if (email!.isEmpty) {
+      return null;
+    }
+
     RegExp emailRegex = RegExp(r'^[\w\.-]+@[\w-]+\.\w{2,3}(\.\w{2,3})?$');
     final isEmailValid = emailRegex.hasMatch(email ?? '');
     if (!isEmailValid) {
@@ -40,22 +49,17 @@ class _FormPageState extends State<FormPage> {
     return null;
   }
 
-  void fetchData() async {
-    Map<String, dynamic>? data;
-
-    if (widget.contactId != null) {
-      data = await DatabaseHelper.getSingleData(widget.contactId!);
-    }
-
-    if (data != null) {
-      _nameController.text = data['name'];
-      _phoneController.text = data['phone'];
-      _emailController.text = data['email'];
-      _photoController.text = data['photo'];
-      data2 = data;
-      // imagePicked = data['photo'];
-      print('imagem: ${data["photo"]}');
-      // setState(() {});
+  void fillPageElements() async {
+    if (widget.contact != null) {
+      _nameController.text = widget.contact!['name'];
+      _phoneController.text = widget.contact!['phone'];
+      _emailController.text = widget.contact!['email'];
+      // _photoController.text = widget.contact!['photo'];
+      _businessController.text = widget.contact!['business'];
+      imageString = widget.contact!['photo'];
+      if (imageString.isNotEmpty) {
+        hasProfilePic = true;
+      }
     }
   }
 
@@ -67,15 +71,23 @@ class _FormPageState extends State<FormPage> {
 
       imagePicked = File(imgFile.path);
       imageString = imgString;
+      hasProfilePic = true;
       // refreshImages();
       setState(() {});
     });
   }
 
+  _clearImage() {
+    hasProfilePic = false;
+    imageString = '';
+    imagePicked = null;
+    setState(() {});
+  }
+
   @override
   void initState() {
     super.initState();
-    fetchData();
+    fillPageElements();
   }
 
   void _updateData(BuildContext context) async {
@@ -83,11 +95,12 @@ class _FormPageState extends State<FormPage> {
       'name': _nameController.text,
       'phone': _phoneController.text,
       'email': _emailController.text,
-      'photo': _photoController.text,
+      'business': _businessController.text,
+      'photo': imageString,
     };
 
-    if (widget.contactId != null) {
-      await DatabaseHelper.updateData(widget.contactId!, data);
+    if (widget.contact != null) {
+      await DatabaseHelper.updateData(widget.contact!['id'], data);
       Navigator.pop(context, true);
     }
   }
@@ -96,9 +109,10 @@ class _FormPageState extends State<FormPage> {
     final name = _nameController.text;
     final phone = _phoneController.text;
     final email = _emailController.text;
+    final business = _businessController.text;
     final photo = imageString;
 
-    await DatabaseHelper.insertContact(name, phone, email, photo);
+    await DatabaseHelper.insertContact(name, phone, email, business, photo);
 
     Navigator.pop(context, true);
   }
@@ -108,25 +122,31 @@ class _FormPageState extends State<FormPage> {
     _nameController.dispose();
     _phoneController.dispose();
     _emailController.dispose();
-    _photoController.dispose();
+    _businessController.dispose();
     super.dispose();
   }
 
   Widget getWidget() {
-    if (widget.contactId == null && imagePicked != null) {
+    if (imagePicked != null) {
       return Image.file(
         imagePicked!,
         height: 150,
         width: 150,
         fit: BoxFit.cover,
       );
-    } else if (widget.contactId != null && data2 != null) {
-      return Utils.imageFromBase64String(data2?['photo'] ?? "");
+    } else if (widget.contact != null &&
+        // !contactPhotoChanged &&
+        imageString.trim().isNotEmpty) {
+      return Utils.imageFromBase64String(widget.contact!['photo'] ?? "");
     } else {
-      return const Text(
-        'Imagem do contato não definida',
-        style: TextStyle(
-          fontSize: 20,
+      return Container(
+        height: 150,
+        width: 150,
+        color: Colors.grey[100],
+        child: const Icon(
+          Icons.person,
+          size: 150,
+          color: Colors.grey,
         ),
       );
     }
@@ -134,10 +154,9 @@ class _FormPageState extends State<FormPage> {
 
   @override
   Widget build(BuildContext context) {
-    
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Editar Contato'),
+        title: Text(widget.title),
       ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
@@ -151,27 +170,49 @@ class _FormPageState extends State<FormPage> {
                   height: 50,
                 ),
                 ClipRRect(
-                    // aki
-                    borderRadius: BorderRadius.circular(10000),
-                    child: getWidget()),
+                  // aki
+                  borderRadius: BorderRadius.circular(10000),
+                  child: getWidget(),
+                ),
+                const SizedBox(
+                  height: 18,
+                ),
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    ElevatedButton(
-                      onPressed: () {
+                    GestureDetector(
+                      child: const Icon(Icons.photo_library_rounded,
+                          color: Colors.black54),
+                      onTap: () {
                         _pickImage(ImageSource.gallery);
-                        // _pickImageFromGallery(ImageSource.gallery);
-                        print('Pick from Gallery');
                       },
-                      child: const Text('Galeria'),
                     ),
-                    ElevatedButton(
-                      onPressed: () {
+                    const SizedBox(width: 15),
+                    GestureDetector(
+                      child: const Icon(Icons.photo_camera_rounded,
+                          color: Colors.black54),
+                      onTap: () {
                         _pickImage(ImageSource.camera);
-                        print('pick from Camera');
                       },
-                      child: const Text('Câmera'),
                     ),
+                    hasProfilePic
+                        ? Row(
+                            children: [
+                              const SizedBox(width: 15),
+                              GestureDetector(
+                                child: const Icon(
+                                  Icons.delete_rounded,
+                                  color: Colors.redAccent,
+                                ),
+                                onTap: () {
+                                  _clearImage();
+                                },
+                              ),
+                            ],
+                          )
+                        : const SizedBox(
+                            width: 0,
+                          ),
                   ],
                 ),
                 const SizedBox(
@@ -244,34 +285,36 @@ class _FormPageState extends State<FormPage> {
                   autovalidateMode: AutovalidateMode.onUserInteraction,
                 ),
                 const SizedBox(height: sizedBoxHeight),
-                // TextFormField(
-                //   controller: _photoController,
-                //   decoration: InputDecoration(
-                //     hintText: 'Photo',
-                //     border: const OutlineInputBorder(),
-                //     prefixIcon: const Icon(Icons.photo_rounded),
-                //     prefixIconColor: MaterialStateColor.resolveWith(
-                //         (Set<MaterialState> states) {
-                //       if (states.contains(MaterialState.focused)) {
-                //         return Colors.green;
-                //       }
-                //       if (states.contains(MaterialState.error)) {
-                //         return Colors.red;
-                //       }
-                //       return Colors.grey;
-                //     }),
-                //   ),
-                // ),
-                // const SizedBox(height: sizedBoxHeight),
+                TextFormField(
+                  controller: _businessController,
+                  decoration: InputDecoration(
+                    hintText: 'Empresa',
+                    border: const OutlineInputBorder(),
+                    prefixIcon: const Icon(Icons.business_center_rounded),
+                    prefixIconColor: MaterialStateColor.resolveWith(
+                        (Set<MaterialState> states) {
+                      if (states.contains(MaterialState.focused)) {
+                        return Colors.green;
+                      }
+                      if (states.contains(MaterialState.error)) {
+                        return Colors.red;
+                      }
+                      return Colors.grey;
+                    }),
+                  ),
+                ),
+                const SizedBox(height: sizedBoxHeight),
                 ElevatedButton(
                   onPressed: () {
-                    if (widget.contactId != null) {
-                      _updateData(context);
-                    } else {
-                      _saveData();
+                    if (_formKey.currentState!.validate()) {
+                      if (widget.contact != null) {
+                        _updateData(context);
+                      } else {
+                        _saveData();
+                      }
                     }
                   },
-                  child: Text(widget.contactId == null
+                  child: Text(widget.contact == null
                       ? "Salvar Contato"
                       : "Atualizar Contato"),
                 ),

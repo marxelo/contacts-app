@@ -3,9 +3,7 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 
 class Utils {
-  static Image imageFromBase64String(String base64String) {
-    print('akiiiiiiiiiiiiiiiiiiiiiiiii');
-    print('string to decode: ${base64String}');
+  static Image imageFromBase64String(String base64String) {    
     return Image.memory(
       base64Decode(base64String),
       fit: BoxFit.cover,
