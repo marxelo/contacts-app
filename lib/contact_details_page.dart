@@ -8,17 +8,17 @@ import 'package:contacts_app/database_helper.dart';
 
 final _formKey = GlobalKey<FormState>();
 
-class FormPage extends StatefulWidget {
-  const FormPage({Key? key, this.contact, required this.title})
+class ContactDetailPagePage extends StatefulWidget {
+  const ContactDetailPagePage({Key? key, this.contact, required this.title})
       : super(key: key);
   final Map<String, dynamic>? contact;
   final String title;
 
   @override
-  State<FormPage> createState() => _FormPageState();
+  State<ContactDetailPagePage> createState() => _ContactDetailPagePageState();
 }
 
-class _FormPageState extends State<FormPage> {
+class _ContactDetailPagePageState extends State<ContactDetailPagePage> {
   final _nameController = TextEditingController();
   final _phoneController = TextEditingController();
   final _emailController = TextEditingController();
@@ -64,7 +64,7 @@ class _FormPageState extends State<FormPage> {
 
   _pickImage(ImageSource source) {
     ImagePicker()
-        .pickImage(source: source, maxHeight: 512, maxWidth: 512, imageQuality: 75)
+        .pickImage(source: source, maxHeight: 256, maxWidth: 256)
         .then((imgFile) async {
       String imgString = Utils.base64String(await imgFile!.readAsBytes());
 

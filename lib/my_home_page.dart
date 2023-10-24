@@ -1,6 +1,7 @@
 import 'package:contacts_app/database_helper.dart';
 import 'package:contacts_app/form_page.dart';
 import 'package:flutter/material.dart';
+import 'package:contacts_app/contact_details.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
@@ -66,45 +67,57 @@ class _MyHomePageState extends State<MyHomePage> {
               child: ListView.builder(
                   itemCount: dataList.length,
                   itemBuilder: (context, index) {
-                    return ListTile(
-                      title: Text(dataList[index]['name']),
-                      subtitle: Text(dataList[index]['phone'] +
-                          '\n' +
-                          dataList[index]['email']),
-                      trailing: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          IconButton(
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => FormPage(
-                                    contact: dataList[index],
-                                    title: 'Editar Contato',
+                    return GestureDetector(
+                      onDoubleTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ContactDetails(
+                              contactParam: dataList[index],
+                            ),
+                          ),
+                        ).then((result) {
+                            fetchData();
+                        });
+                      },
+                      child: ListTile(
+                        title: Text(dataList[index]['name']),
+                        subtitle: Text(dataList[index]['phone']),
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            IconButton(
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => FormPage(
+                                      contact: dataList[index],
+                                      title: 'Editar Contato',
+                                    ),
                                   ),
-                                ),
-                              ).then((result) {
-                                if (result == true) {
-                                  fetchData();
-                                }
-                              });
-                            },
-                            icon: const Icon(
-                              Icons.mode_edit_outline_outlined,
-                              color: Colors.green,
+                                ).then((result) {
+                                  if (result == true) {
+                                    fetchData();
+                                  }
+                                });
+                              },
+                              icon: const Icon(
+                                Icons.mode_edit_outline_outlined,
+                                color: Colors.green,
+                              ),
                             ),
-                          ),
-                          IconButton(
-                            onPressed: () {
-                              _delete(dataList[index]['id']);
-                            },
-                            icon: const Icon(
-                              Icons.delete_outline,
-                              color: Colors.red,
+                            IconButton(
+                              onPressed: () {
+                                _delete(dataList[index]['id']);
+                              },
+                              icon: const Icon(
+                                Icons.delete_outline,
+                                color: Colors.red,
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     );
                   }),

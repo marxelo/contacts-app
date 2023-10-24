@@ -3,12 +3,13 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 
 class Utils {
-  static Image imageFromBase64String(String base64String) {    
+  static Image imageFromBase64String(String base64String,
+      {double width = 150.0, double height = 150.0}) {
     return Image.memory(
       base64Decode(base64String),
       fit: BoxFit.cover,
-      width: 150,
-      height: 150,
+      width: width,
+      height: height,
     );
   }
 
