@@ -42,7 +42,9 @@ class _ContactDetailsState extends State<ContactDetails> {
 
   void _delete(int id) async {
     await DatabaseHelper.deleteData(id);
-
+    // ignore: use_build_context_synchronously
+    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        backgroundColor: Colors.red, content: Text('Contato excluído')));
     if (context.mounted) Navigator.pop(context, true);
   }
 
@@ -86,9 +88,26 @@ class _ContactDetailsState extends State<ContactDetails> {
               Icons.delete_outline_outlined,
               color: Colors.black87,
             ),
-            onPressed: () {
-              _delete(contact['id']);
-            },
+            onPressed: () => showDialog<String>(
+              context: context,
+              builder: (BuildContext context) => AlertDialog(
+                title: const Text('Apagar Contato?'),
+                // content: const Text('AlertDialog description'),
+                actions: <Widget>[
+                  TextButton(
+                    onPressed: () => Navigator.pop(context, 'Cancel'),
+                    child: const Text('Não'),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      _delete(contact['id']);
+                      Navigator.pop(context, 'OK');
+                    },
+                    child: const Text('Sim'),
+                  ),
+                ],
+              ),
+            ),
           )
         ],
         title: const Text('Detalhes'),

@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:contacts_app/enums/profile_pic_action.dart';
 import 'package:contacts_app/utils/constants.dart';
 import 'package:contacts_app/utils/utils.dart';
 import 'package:flutter/material.dart';
@@ -64,7 +65,8 @@ class _FormPageState extends State<FormPage> {
 
   _pickImage(ImageSource source) {
     ImagePicker()
-        .pickImage(source: source, maxHeight: 512, maxWidth: 512, imageQuality: 75)
+        .pickImage(
+            source: source, maxHeight: 512, maxWidth: 512, imageQuality: 75)
         .then((imgFile) async {
       String imgString = Utils.base64String(await imgFile!.readAsBytes());
 
@@ -125,6 +127,76 @@ class _FormPageState extends State<FormPage> {
     super.dispose();
   }
 
+  Future<void> _pickSource() async {
+    switch (await showDialog<ProfilePicAction>(
+        context: context,
+        builder: (BuildContext context) {
+          return SimpleDialog(
+            title: const Text('O que você quer fazer?'),
+            children: <Widget>[
+              SimpleDialogOption(
+                onPressed: () {
+                  Navigator.pop(context, ProfilePicAction.pickFromCamera);
+                },
+                child: const Row(
+                  children: [
+                    Icon(Icons.camera_alt_outlined),
+                    SizedBox(
+                      width: 10,
+                    ),
+                    Text('Tirar uma foto'),
+                  ],
+                ),
+              ),
+              SimpleDialogOption(
+                onPressed: () {
+                  Navigator.pop(context, ProfilePicAction.pickFromGallery);
+                },
+                child: const Row(
+                  children: [
+                    Icon(Icons.photo_library_outlined),
+                    SizedBox(
+                      width: 10,
+                    ),
+                    Text('Usar foto da galeria'),
+                  ],
+                ),
+              ),
+              hasProfilePic
+                  ? SimpleDialogOption(
+                      onPressed: () {
+                        Navigator.pop(context, ProfilePicAction.deletePicture);
+                      },
+                      child: const Row(
+                        children: [
+                          Icon(Icons.delete_outline_outlined),
+                          SizedBox(
+                            width: 10,
+                          ),
+                          Text('Remover foto'),
+                        ],
+                      ),
+                    )
+                  : const SimpleDialogOption(),
+            ],
+          );
+        })) {
+      case ProfilePicAction.pickFromCamera:
+        _pickImage(ImageSource.camera);
+
+        break;
+      case ProfilePicAction.pickFromGallery:
+        _pickImage(ImageSource.gallery);
+        break;
+      case ProfilePicAction.deletePicture:
+        _clearImage();
+        break;
+      case null:
+        // dialog dismissed
+        break;
+    }
+  }
+
   Widget getWidget() {
     if (imagePicked != null) {
       return Image.file(
@@ -168,51 +240,16 @@ class _FormPageState extends State<FormPage> {
                 const SizedBox(
                   height: 50,
                 ),
-                ClipRRect(
-                  // aki
-                  borderRadius: BorderRadius.circular(10000),
-                  child: getWidget(),
+                GestureDetector(
+                  onTap: () => _pickSource(),
+                  child: ClipRRect(
+                    // aki
+                    borderRadius: BorderRadius.circular(10000),
+                    child: getWidget(),
+                  ),
                 ),
                 const SizedBox(
                   height: 18,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    GestureDetector(
-                      child: const Icon(Icons.photo_outlined,
-                          color: kFormPickImageIconColor, size: kFormPickImageIconSize,),
-                      onTap: () {
-                        _pickImage(ImageSource.gallery);
-                      },
-                    ),
-                    const SizedBox(width: 15),
-                    GestureDetector(
-                      child: const Icon(Icons.photo_camera_outlined,
-                          color: kFormPickImageIconColor, size: kFormPickImageIconSize,),
-                      onTap: () {
-                        _pickImage(ImageSource.camera);
-                      },
-                    ),
-                    hasProfilePic
-                        ? Row(
-                            children: [
-                              const SizedBox(width: 15),
-                              GestureDetector(
-                                child: const Icon(
-                                  Icons.delete_outline_sharp,
-                                  color: Colors.redAccent, size: kFormPickImageIconSize,
-                                ),
-                                onTap: () {
-                                  _clearImage();
-                                },
-                              ),
-                            ],
-                          )
-                        : const SizedBox(
-                            width: 0,
-                          ),
-                  ],
                 ),
                 const SizedBox(
                   height: kFormBoxSizedHeight,
