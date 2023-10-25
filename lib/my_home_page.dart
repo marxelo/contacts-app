@@ -53,77 +53,107 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
-      ),
-      body: Center(
-        child: Column(
-          children: [
-            const SizedBox(
-              height: 30,
+      body: CustomScrollView(
+        slivers: <Widget>[
+          SliverAppBar(
+            pinned: true,
+            snap: false,
+            floating: false,
+            expandedHeight: 200.0,
+            shadowColor: Colors.black38,
+            surfaceTintColor: Colors.white,
+            flexibleSpace: FlexibleSpaceBar(
+              centerTitle: false,
+              titlePadding: const EdgeInsets.only(left: 10),
+              title: const Text(
+                'Contatos',
+                style: TextStyle(color: Colors.black87),
+              ),
+              expandedTitleScale: 2.0,
+              background: AnimatedContainer(
+                alignment: Alignment.bottomRight,
+                padding: const EdgeInsets.only(top: 28),
+                width: 250,
+                height: 250,
+                duration: const Duration(milliseconds: 800),
+                curve: Curves.ease,
+                child: const Icon(
+                  Icons.person,
+                  size: 250,
+                  color: Colors.black12,
+                ),
+              ),
             ),
-            Expanded(
-              child: ListView.builder(
-                  itemCount: dataList.length,
-                  itemBuilder: (context, index) {
-                    return GestureDetector(
-                      onDoubleTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => ContactDetails(
-                              contactParam: dataList[index],
-                            ),
-                          ),
-                        ).then((result) {
-                            fetchData();
-                        });
-                      },
-                      child: ListTile(
-                        title: Text(dataList[index]['name']),
-                        subtitle: Text(dataList[index]['phone']),
-                        trailing: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            IconButton(
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => FormPage(
-                                      contact: dataList[index],
-                                      title: 'Editar Contato',
-                                    ),
-                                  ),
-                                ).then((result) {
-                                  if (result == true) {
-                                    fetchData();
-                                  }
-                                });
-                              },
-                              icon: const Icon(
-                                Icons.mode_edit_outline_outlined,
-                                color: Colors.green,
-                              ),
-                            ),
-                            IconButton(
-                              onPressed: () {
-                                _delete(dataList[index]['id']);
-                              },
-                              icon: const Icon(
-                                Icons.delete_outline,
-                                color: Colors.red,
-                              ),
-                            ),
-                          ],
+          ),
+          const SliverToBoxAdapter(
+            child: SizedBox(
+              height: 30,
+              child: Center(
+                child: Text(''),
+              ),
+            ),
+          ),
+          SliverList(
+            delegate: SliverChildBuilderDelegate(
+              (BuildContext context, int index) {
+                return GestureDetector(
+                  onDoubleTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ContactDetails(
+                          contactParam: dataList[index],
                         ),
                       ),
-                    );
-                  }),
+                    ).then((result) {
+                      fetchData();
+                    });
+                  },
+                  child: ListTile(
+                    title: Text(dataList[index]['name']),
+                    subtitle: Text(dataList[index]['phone']),
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => FormPage(
+                                  contact: dataList[index],
+                                  title: 'Editar Contato',
+                                ),
+                              ),
+                            ).then((result) {
+                              if (result == true) {
+                                fetchData();
+                              }
+                            });
+                          },
+                          icon: const Icon(
+                            Icons.mode_edit_outline_outlined,
+                            color: Colors.green,
+                          ),
+                        ),
+                        IconButton(
+                          onPressed: () {
+                            _delete(dataList[index]['id']);
+                          },
+                          icon: const Icon(
+                            Icons.delete_outline,
+                            color: Colors.red,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+              childCount: dataList.length,
             ),
-          ],
-        ),
+          ),
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
@@ -141,7 +171,6 @@ class _MyHomePageState extends State<MyHomePage> {
             }
           });
         },
-        tooltip: 'Increment',
         child: const Icon(Icons.add),
       ),
     );
