@@ -4,7 +4,7 @@ import 'dart:convert';
 
 class Utils {
   static Image imageFromBase64String(String base64String,
-      {double width = 150.0, double height = 150.0}) {
+      {double width = 250.0, double height = 250.0}) {
     return Image.memory(
       base64Decode(base64String),
       fit: BoxFit.cover,

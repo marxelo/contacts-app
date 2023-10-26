@@ -144,7 +144,12 @@ class _FormPageState extends State<FormPage> {
                     SizedBox(
                       width: 10,
                     ),
-                    Text('Tirar uma foto'),
+                    Text(
+                      'Tirar uma foto',
+                      style: TextStyle(
+                        fontSize: 16,
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -158,7 +163,12 @@ class _FormPageState extends State<FormPage> {
                     SizedBox(
                       width: 10,
                     ),
-                    Text('Usar foto da galeria'),
+                    Text(
+                      'Usar foto da galeria',
+                      style: TextStyle(
+                        fontSize: 16,
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -173,7 +183,12 @@ class _FormPageState extends State<FormPage> {
                           SizedBox(
                             width: 10,
                           ),
-                          Text('Remover foto'),
+                          Text(
+                            'Remover foto',
+                            style: TextStyle(
+                              fontSize: 16,
+                            ),
+                          ),
                         ],
                       ),
                     )
@@ -201,8 +216,8 @@ class _FormPageState extends State<FormPage> {
     if (imagePicked != null) {
       return Image.file(
         imagePicked!,
-        height: 150,
-        width: 150,
+        height: 250,
+        width: 250,
         fit: BoxFit.cover,
       );
     } else if (widget.contact != null &&
@@ -211,12 +226,12 @@ class _FormPageState extends State<FormPage> {
       return Utils.imageFromBase64String(widget.contact!['photo'] ?? "");
     } else {
       return Container(
-        height: 150,
-        width: 150,
+        height: 250,
+        width: 250,
         color: Colors.grey[100],
         child: const Icon(
           Icons.person,
-          size: 150,
+          size: 250,
           color: Colors.grey,
         ),
       );
@@ -242,10 +257,34 @@ class _FormPageState extends State<FormPage> {
                 ),
                 GestureDetector(
                   onTap: () => _pickSource(),
-                  child: ClipRRect(
-                    // aki
-                    borderRadius: BorderRadius.circular(10000),
-                    child: getWidget(),
+                  child: Stack(
+                    alignment: Alignment.bottomRight,
+                    children: [
+                      ClipRRect(
+                        // aki
+                        borderRadius: BorderRadius.circular(10000),
+                        child: getWidget(),
+                      ),
+                      Positioned(
+                          bottom: 10,
+                          left: 180,
+                          child: DecoratedBox(
+                            decoration: BoxDecoration(
+                                color: Colors.white70,
+                                border: Border.all(color: Colors.black12),
+                                borderRadius: BorderRadius.circular(10000)),
+                            child: Padding(
+                              padding: const EdgeInsets.all(8),
+                              child: Icon(
+                                hasProfilePic
+                                    ? Icons.edit_outlined
+                                    : Icons.add_photo_alternate_outlined,
+                                size: 25,
+                                color: Colors.black,
+                              ),
+                            ),
+                          )),
+                    ],
                   ),
                 ),
                 const SizedBox(

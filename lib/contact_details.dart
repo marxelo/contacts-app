@@ -91,19 +91,29 @@ class _ContactDetailsState extends State<ContactDetails> {
             onPressed: () => showDialog<String>(
               context: context,
               builder: (BuildContext context) => AlertDialog(
-                title: const Text('Apagar Contato?'),
-                // content: const Text('AlertDialog description'),
+                title: const Text('Exclusão de Contato'),
+                contentTextStyle:
+                    const TextStyle(color: Colors.black, fontSize: 18),
+                content: Text('Remover ${contact["name"]} dos seus contatos?'),
                 actions: <Widget>[
                   TextButton(
                     onPressed: () => Navigator.pop(context, 'Cancel'),
-                    child: const Text('Não'),
+                    child: const Text(
+                      'Não',
+                      style: TextStyle(
+                        fontSize: 20,
+                      ),
+                    ),
                   ),
                   TextButton(
                     onPressed: () {
                       _delete(contact['id']);
                       Navigator.pop(context, 'OK');
                     },
-                    child: const Text('Sim'),
+                    child: const Text(
+                      'Sim',
+                      style: TextStyle(fontSize: 20),
+                    ),
                   ),
                 ],
               ),
@@ -122,9 +132,12 @@ class _ContactDetailsState extends State<ContactDetails> {
           const SizedBox(
             height: 20,
           ),
-          Text(
-            contact['name'],
-            style: const TextStyle(fontSize: 28),
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Text(
+              contact['name'],
+              style: const TextStyle(fontSize: 28), textAlign: TextAlign.center,
+            ),
           ),
           const SizedBox(
             height: 50,
