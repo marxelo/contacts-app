@@ -1,19 +1,19 @@
-import 'package:contacts_app/database_helper.dart';
-import 'package:contacts_app/form_page.dart';
+import 'package:contacts_app/utils/database_helper.dart';
+import 'package:contacts_app/pages/form_page.dart';
 import 'package:contacts_app/utils/constants.dart';
 import 'package:contacts_app/utils/utils.dart';
 import 'package:flutter/material.dart';
 
-class ContactDetails extends StatefulWidget {
-  const ContactDetails({super.key, required this.contactParam});
+class ContactDetailsPage extends StatefulWidget {
+  const ContactDetailsPage({super.key, required this.contactParam});
 
   final Map<String, dynamic> contactParam;
 
   @override
-  State<ContactDetails> createState() => _ContactDetailsState();
+  State<ContactDetailsPage> createState() => _ContactDetailsPageState();
 }
 
-class _ContactDetailsState extends State<ContactDetails> {
+class _ContactDetailsPageState extends State<ContactDetailsPage> {
   Map<String, dynamic> contact = {};
 
   @override
@@ -42,9 +42,7 @@ class _ContactDetailsState extends State<ContactDetails> {
 
   void _delete(int id) async {
     await DatabaseHelper.deleteData(id);
-    // ignore: use_build_context_synchronously
-    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        backgroundColor: Colors.red, content: Text('Contato excluído')));
+
     if (context.mounted) Navigator.pop(context, true);
   }
 
@@ -91,17 +89,24 @@ class _ContactDetailsState extends State<ContactDetails> {
             onPressed: () => showDialog<String>(
               context: context,
               builder: (BuildContext context) => AlertDialog(
-                title: const Text('Exclusão de Contato'),
-                contentTextStyle:
-                    const TextStyle(color: Colors.black, fontSize: 18),
-                content: Text('Remover ${contact["name"]} dos seus contatos?'),
+                title: const Text(
+                  'Apagar contato?',
+                  style: TextStyle(
+                    fontSize: kDeleteDialogFontSize + 2,
+                  ),
+                ),
+                contentTextStyle: const TextStyle(
+                  color: Colors.black,
+                  fontSize: kDeleteDialogFontSize - 2.0,
+                ),
+                content: Text('${contact["name"]} será removido des seus contatos'),
                 actions: <Widget>[
                   TextButton(
                     onPressed: () => Navigator.pop(context, 'Cancel'),
                     child: const Text(
                       'Não',
                       style: TextStyle(
-                        fontSize: 20,
+                        fontSize: kDeleteDialogFontSize,
                       ),
                     ),
                   ),
@@ -112,7 +117,9 @@ class _ContactDetailsState extends State<ContactDetails> {
                     },
                     child: const Text(
                       'Sim',
-                      style: TextStyle(fontSize: 20),
+                      style: TextStyle(
+                        fontSize: kDeleteDialogFontSize,
+                      ),
                     ),
                   ),
                 ],
@@ -210,7 +217,6 @@ class _ContactDetailsState extends State<ContactDetails> {
                     const SizedBox(height: 25),
                     Row(
                       children: [
-                        // const Text('Empresa: '),
                         const Icon(
                           Icons.business_center_rounded,
                           color: kDetailsIconColor,
@@ -229,9 +235,6 @@ class _ContactDetailsState extends State<ContactDetails> {
                   ],
                 ),
               ),
-            ),
-            const SizedBox(
-              height: 10,
             ),
             const SizedBox(
               height: 50,

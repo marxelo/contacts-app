@@ -1,9 +1,10 @@
-import 'package:contacts_app/database_helper.dart';
-import 'package:contacts_app/form_page.dart';
+import 'package:contacts_app/utils/database_helper.dart';
+import 'package:contacts_app/pages/form_page.dart';
+import 'package:contacts_app/utils/constants.dart';
 import 'package:flutter/material.dart';
-import 'package:contacts_app/contact_details.dart';
+import 'package:contacts_app/pages/contact_details_page.dart';
 import 'package:flutter_swipe_action_cell/flutter_swipe_action_cell.dart';
-import 'package:contacts_app/utils/utils.dart';
+import 'package:contacts_app/components/circle_avatar_widget.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
@@ -37,8 +38,25 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  void _delete(int id) async {
-    await DatabaseHelper.deleteData(id);
+  void _delete(Map<String, dynamic> contact) async {
+    await DatabaseHelper.deleteData(contact['id']);
+
+    final List<Map<String, dynamic>> updatedData =
+        await DatabaseHelper.getData();
+
+    setState(() {
+      dataList = updatedData;
+    });
+  }
+
+  void _undoDelete(Map<String, dynamic> contact) async {
+    final name = contact['name'];
+    final phone = contact['phone'];
+    final email = contact['email'];
+    final business = contact['business'];
+    final photo = contact['photo'];
+
+    await DatabaseHelper.insertContact(name, phone, email, business, photo);
 
     final List<Map<String, dynamic>> updatedData =
         await DatabaseHelper.getData();
@@ -54,6 +72,40 @@ class _MyHomePageState extends State<MyHomePage> {
 
     setState(() {
       dataList = updatedData;
+    });
+  }
+
+  Future<void> _showSnackBar(
+      BuildContext context, Map<String, dynamic> deletedContact) async {
+    ScaffoldMessenger.of(context)
+      ..removeCurrentSnackBar()
+      ..showSnackBar(
+        SnackBar(
+          content: const Text('Contato removido!'),
+          action: SnackBarAction(
+            label: 'Desfazer',
+            onPressed: () {
+              _undoDelete(deletedContact);
+            },
+          ),
+        ),
+      );
+  }
+
+  Future<void> _navigateAndDisplayContactDetails(
+      BuildContext context, Map<String, dynamic> contact) async {
+    // Navigator.push returns a Future that completes after calling
+    // Navigator.pop on the Selection Screen.
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ContactDetailsPage(
+          contactParam: contact,
+        ),
+      ),
+    ).then((result) {
+      fetchData();
+      _showSnackBar(context, contact);
     });
   }
 
@@ -134,7 +186,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget _item(BuildContext context, int index) {
     return SwipeActionCell(
       controller: controller,
-      fullSwipeFactor: 0.5,
+      fullSwipeFactor: kfullSwipeFactor,
       index: index,
       key: ValueKey(dataList[index]),
       leadingActions: [
@@ -170,50 +222,37 @@ class _MyHomePageState extends State<MyHomePage> {
       ],
       trailingActions: [
         SwipeAction(
-            content: const Row(children: [
-              SizedBox(
-                width: 15,
-              ),
-              Icon(
-                Icons.delete_outline,
-                color: Colors.white,
-              ),
-              Text(
-                'Excluir',
-                style: TextStyle(color: Colors.white),
-              ),
-            ]),
-            performsFirstActionWithFullSwipe: true,
-            forceAlignmentToBoundary: true,
-            color: const Color(0xFFFE4A49),
-            onTap: (handler) async {
-              // await handler(true);
-              _delete(dataList[index]['id']);
-              setState(() {});
-            }),
+          content: const Row(children: [
+            SizedBox(
+              width: 12,
+            ),
+            Icon(
+              Icons.delete_outline,
+              color: Colors.white,
+            ),
+            Text(
+              'Excluir',
+              style: TextStyle(color: Colors.white),
+            ),
+          ]),
+          performsFirstActionWithFullSwipe: true,
+          forceAlignmentToBoundary: true,
+          color: const Color(0xFFFE4A49),
+          onTap: (handler) async {
+            var deletedContact = dataList[index];
+            _delete(dataList[index]);
+            setState(() {});
+            _showSnackBar(context, deletedContact);
+          },
+        ),
       ],
       child: GestureDetector(
         onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => ContactDetails(
-                contactParam: dataList[index],
-              ),
-            ),
-          ).then((result) {
-            fetchData();
-          });
+          _navigateAndDisplayContactDetails(context, dataList[index]);
         },
         child: ListTile(
-          leading: CircleAvatar(
-            backgroundImage: dataList[index]['photo'].toString().isNotEmpty
-                ? (Utils.imageFromBase64String(dataList[index]['photo'])).image
-                : null,
-            backgroundColor: Utils.getBackgroundColor(dataList[index]['id']),            
-            child: Text(dataList[index]['photo'].toString().isEmpty
-                ? Utils.getInitials(dataList[index]['name'])
-                : ''),
+          leading: CircleAvatarWidget(
+            contact: dataList[index],
           ),
           title: Text(dataList[index]['name']),
           subtitle: Text(dataList[index]['phone']),

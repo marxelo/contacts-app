@@ -9,3 +9,5 @@ const kFormBoxSizedHeight = 20.0;
 const kDetailsImageSize = 250.0;
 const kDetailsTextStyle = TextStyle(color: Colors.black87, fontSize: 18);
 const kDetailsIconColor = Colors.black54;
+const kfullSwipeFactor = 0.6;
+const kDeleteDialogFontSize = 18.0;

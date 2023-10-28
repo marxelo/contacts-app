@@ -5,7 +5,7 @@ import 'package:contacts_app/utils/constants.dart';
 import 'package:contacts_app/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:contacts_app/database_helper.dart';
+import 'package:contacts_app/utils/database_helper.dart';
 
 final _formKey = GlobalKey<FormState>();
 
