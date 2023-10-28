@@ -105,7 +105,9 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
     ).then((result) {
       fetchData();
-      _showSnackBar(context, contact);
+      if (result != null && result) {
+        _showSnackBar(context, contact);
+      }
     });
   }
 

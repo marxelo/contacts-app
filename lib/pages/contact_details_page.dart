@@ -99,7 +99,7 @@ class _ContactDetailsPageState extends State<ContactDetailsPage> {
                   color: Colors.black,
                   fontSize: kDeleteDialogFontSize - 2.0,
                 ),
-                content: Text('${contact["name"]} será removido des seus contatos'),
+                content: Text('${contact["name"]} será removido de seus contatos'),
                 actions: <Widget>[
                   TextButton(
                     onPressed: () => Navigator.pop(context, 'Cancel'),
