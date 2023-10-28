@@ -3,6 +3,7 @@ import 'package:contacts_app/form_page.dart';
 import 'package:flutter/material.dart';
 import 'package:contacts_app/contact_details.dart';
 import 'package:flutter_swipe_action_cell/flutter_swipe_action_cell.dart';
+import 'package:contacts_app/utils/utils.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
@@ -205,6 +206,15 @@ class _MyHomePageState extends State<MyHomePage> {
           });
         },
         child: ListTile(
+          leading: CircleAvatar(
+            backgroundImage: dataList[index]['photo'].toString().isNotEmpty
+                ? (Utils.imageFromBase64String(dataList[index]['photo'])).image
+                : null,
+            backgroundColor: Utils.getBackgroundColor(dataList[index]['id']),            
+            child: Text(dataList[index]['photo'].toString().isEmpty
+                ? Utils.getInitials(dataList[index]['name'])
+                : ''),
+          ),
           title: Text(dataList[index]['name']),
           subtitle: Text(dataList[index]['phone']),
         ),

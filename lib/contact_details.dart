@@ -123,118 +123,121 @@ class _ContactDetailsState extends State<ContactDetails> {
         title: const Text('Detalhes'),
       ),
       body: Center(
-        child: Column(mainAxisAlignment: MainAxisAlignment.end, children: [
-          ClipRRect(
-            // aki
-            borderRadius: BorderRadius.circular(10000),
-            child: getContactImageWidget(),
-          ),
-          const SizedBox(
-            height: 20,
-          ),
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: Text(
-              contact['name'],
-              style: const TextStyle(fontSize: 28), textAlign: TextAlign.center,
+        child: SingleChildScrollView(
+          child: Column(mainAxisAlignment: MainAxisAlignment.end, children: [
+            ClipRRect(
+              // aki
+              borderRadius: BorderRadius.circular(10000),
+              child: getContactImageWidget(),
             ),
-          ),
-          const SizedBox(
-            height: 50,
-          ),
-          Container(
-            height: 240,
-            width: 360,
-            decoration: const BoxDecoration(
-              color: Color.fromARGB(76, 199, 198, 198),
-              borderRadius: BorderRadius.all(
-                Radius.circular(20),
+            const SizedBox(
+              height: 20,
+            ),
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Text(
+                contact['name'],
+                style: const TextStyle(fontSize: 28),
+                textAlign: TextAlign.center,
               ),
             ),
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  const Row(
-                    children: [
-                      Text(
-                        'Informações do Contato',
-                        textAlign: TextAlign.left,
-                        style: TextStyle(
-                            fontSize: 22,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.black87),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 32),
-                  Row(
-                    children: [
-                      const Icon(
-                        Icons.phone_rounded,
-                        color: kDetailsIconColor,
-                      ),
-                      const SizedBox(
-                        width: 5,
-                      ),
-                      Text(
-                        contact['phone'].toString().trim().isNotEmpty
-                            ? contact['phone']
-                            : 'Não cadastrado',
-                        style: kDetailsTextStyle,
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 25),
-                  Row(
-                    children: [
-                      // const Text('E-mail: '),
-                      const Icon(
-                        Icons.email_rounded,
-                        color: kDetailsIconColor,
-                      ),
-                      const SizedBox(
-                        width: 5,
-                      ),
-                      Text(
-                        contact['email'].toString().trim().isNotEmpty
-                            ? contact['email']
-                            : 'Não cadastrado',
-                        style: kDetailsTextStyle,
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 25),
-                  Row(
-                    children: [
-                      // const Text('Empresa: '),
-                      const Icon(
-                        Icons.business_center_rounded,
-                        color: kDetailsIconColor,
-                      ),
-                      const SizedBox(
-                        width: 5,
-                      ),
-                      Text(
-                        contact['business'].toString().trim().isNotEmpty
-                            ? contact['business']
-                            : 'Não cadastrado',
-                        style: kDetailsTextStyle,
-                      ),
-                    ],
-                  ),
-                ],
+            const SizedBox(
+              height: 50,
+            ),
+            Container(
+              height: 240,
+              width: 360,
+              decoration: const BoxDecoration(
+                color: Color.fromARGB(76, 199, 198, 198),
+                borderRadius: BorderRadius.all(
+                  Radius.circular(20),
+                ),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    const Row(
+                      children: [
+                        Text(
+                          'Informações do Contato',
+                          textAlign: TextAlign.left,
+                          style: TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.black87),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 32),
+                    Row(
+                      children: [
+                        const Icon(
+                          Icons.phone_rounded,
+                          color: kDetailsIconColor,
+                        ),
+                        const SizedBox(
+                          width: 5,
+                        ),
+                        Text(
+                          contact['phone'].toString().trim().isNotEmpty
+                              ? contact['phone']
+                              : 'Não cadastrado',
+                          style: kDetailsTextStyle,
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 25),
+                    Row(
+                      children: [
+                        // const Text('E-mail: '),
+                        const Icon(
+                          Icons.email_rounded,
+                          color: kDetailsIconColor,
+                        ),
+                        const SizedBox(
+                          width: 5,
+                        ),
+                        Text(
+                          contact['email'].toString().trim().isNotEmpty
+                              ? contact['email']
+                              : 'Não cadastrado',
+                          style: kDetailsTextStyle,
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 25),
+                    Row(
+                      children: [
+                        // const Text('Empresa: '),
+                        const Icon(
+                          Icons.business_center_rounded,
+                          color: kDetailsIconColor,
+                        ),
+                        const SizedBox(
+                          width: 5,
+                        ),
+                        Text(
+                          contact['business'].toString().trim().isNotEmpty
+                              ? contact['business']
+                              : 'Não cadastrado',
+                          style: kDetailsTextStyle,
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-          const SizedBox(
-            height: 10,
-          ),
-          const SizedBox(
-            height: 50,
-          ),
-        ]),
+            const SizedBox(
+              height: 10,
+            ),
+            const SizedBox(
+              height: 50,
+            ),
+          ]),
+        ),
       ),
     );
   }

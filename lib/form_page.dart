@@ -111,7 +111,7 @@ class _FormPageState extends State<FormPage> {
     final phone = _phoneController.text;
     final email = _emailController.text;
     final business = _businessController.text;
-    final photo = imageString;
+    final photo =  imageString;
 
     await DatabaseHelper.insertContact(name, phone, email, business, photo);
 
