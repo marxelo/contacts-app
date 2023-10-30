@@ -16,7 +16,8 @@ class ContactDetailsPage extends StatefulWidget {
 
 class _ContactDetailsPageState extends State<ContactDetailsPage> {
   Map<String, dynamic> contact = {};
-  final ContainerTransitionType _transitionType = ContainerTransitionType.fadeThrough;
+  final ContainerTransitionType _transitionType =
+      ContainerTransitionType.fadeThrough;
 
   @override
   void initState() {
@@ -64,7 +65,9 @@ class _ContactDetailsPageState extends State<ContactDetailsPage> {
         actions: <Widget>[
           OpenContainer(
             transitionType: _transitionType,
-            transitionDuration: const Duration(milliseconds: 500),
+            transitionDuration: const Duration(
+              milliseconds: kAnimationMillisecondsDuration,
+            ),
             openBuilder: (BuildContext context, VoidCallback _) {
               return FormPage(
                 contact: contact,
@@ -136,7 +139,6 @@ class _ContactDetailsPageState extends State<ContactDetailsPage> {
               ),
             ),
           ),
-          
         ],
         title: const Text('Detalhes'),
       ),

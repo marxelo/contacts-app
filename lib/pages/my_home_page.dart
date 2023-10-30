@@ -139,7 +139,9 @@ class _MyHomePageState extends State<MyHomePage> {
                 padding: const EdgeInsets.only(top: 28),
                 width: 250,
                 height: 250,
-                duration: const Duration(milliseconds: 800),
+                duration: const Duration(
+                  milliseconds: kAnimationMillisecondsDuration,
+                ),
                 curve: Curves.ease,
                 child: const Icon(
                   Icons.person,
@@ -169,6 +171,9 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       floatingActionButton: OpenContainer(
         transitionType: _transitionType,
+           transitionDuration: const Duration(
+          milliseconds: kAnimationMillisecondsDuration,
+        ),
         openBuilder: (BuildContext context, VoidCallback _) {
           return const FormPage(
             title: 'Adicionar Contato',
@@ -272,7 +277,9 @@ class _MyHomePageState extends State<MyHomePage> {
       ],
       child: OpenContainer<bool>(
         transitionType: _transitionType,
-        transitionDuration: const Duration(milliseconds: 500),
+        transitionDuration: const Duration(
+          milliseconds: kAnimationMillisecondsDuration,
+        ),
         openBuilder: (BuildContext _, VoidCallback openContainer) {
           detailedContact = dataList[index];
           return ContactDetailsPage(

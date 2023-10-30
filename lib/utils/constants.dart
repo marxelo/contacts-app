@@ -12,4 +12,4 @@ const kDetailsIconColor = Colors.black54;
 const kfullSwipeFactor = 0.6;
 const kDeleteDialogFontSize = 18.0;
 const kFabDimension = 56.0;
-
+const kAnimationMillisecondsDuration = 600;
