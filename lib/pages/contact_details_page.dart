@@ -1,3 +1,4 @@
+import 'package:animations/animations.dart';
 import 'package:contacts_app/utils/database_helper.dart';
 import 'package:contacts_app/pages/form_page.dart';
 import 'package:contacts_app/utils/constants.dart';
@@ -15,6 +16,7 @@ class ContactDetailsPage extends StatefulWidget {
 
 class _ContactDetailsPageState extends State<ContactDetailsPage> {
   Map<String, dynamic> contact = {};
+  final ContainerTransitionType _transitionType = ContainerTransitionType.fadeThrough;
 
   @override
   void initState() {
@@ -60,25 +62,32 @@ class _ContactDetailsPageState extends State<ContactDetailsPage> {
     return Scaffold(
       appBar: AppBar(
         actions: <Widget>[
-          IconButton(
-            icon: const Icon(
-              Icons.edit_outlined,
-              color: Colors.black87,
+          OpenContainer(
+            transitionType: _transitionType,
+            transitionDuration: const Duration(milliseconds: 500),
+            openBuilder: (BuildContext context, VoidCallback _) {
+              return FormPage(
+                contact: contact,
+                title: 'Editar Contato',
+              );
+            },
+            closedElevation: 0.0,
+            closedShape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(
+                Radius.circular(56 / 2),
+              ),
             ),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => FormPage(
-                    contact: contact,
-                    title: 'Editar Contato',
-                  ),
-                ),
-              ).then((result) {
-                if (result == true) {
-                  fetchUpdatedData();
-                }
-              });
+            onClosed: (result) {
+              if (result == true) {
+                fetchUpdatedData();
+              }
+            },
+            closedColor: Colors.transparent,
+            closedBuilder: (BuildContext context, VoidCallback openContainer) {
+              return const Icon(
+                Icons.edit_outlined,
+                color: Colors.black87,
+              );
             },
           ),
           IconButton(
@@ -99,7 +108,8 @@ class _ContactDetailsPageState extends State<ContactDetailsPage> {
                   color: Colors.black,
                   fontSize: kDeleteDialogFontSize - 2.0,
                 ),
-                content: Text('${contact["name"]} será removido de seus contatos'),
+                content:
+                    Text('${contact["name"]} será removido de seus contatos'),
                 actions: <Widget>[
                   TextButton(
                     onPressed: () => Navigator.pop(context, 'Cancel'),
@@ -125,7 +135,8 @@ class _ContactDetailsPageState extends State<ContactDetailsPage> {
                 ],
               ),
             ),
-          )
+          ),
+          
         ],
         title: const Text('Detalhes'),
       ),

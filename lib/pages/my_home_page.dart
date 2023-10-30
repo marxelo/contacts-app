@@ -1,3 +1,4 @@
+import 'package:animations/animations.dart';
 import 'package:contacts_app/utils/database_helper.dart';
 import 'package:contacts_app/pages/form_page.dart';
 import 'package:contacts_app/utils/constants.dart';
@@ -16,8 +17,10 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  final ContainerTransitionType _transitionType = ContainerTransitionType.fade;
   List<Map<String, dynamic>> dataList = [];
   late SwipeActionController controller;
+  late Map<String, dynamic> detailedContact;
 
   @override
   void initState() {
@@ -164,23 +167,37 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const FormPage(
-                contact: null,
-                title: 'Adicionar Contato',
+      floatingActionButton: OpenContainer(
+        transitionType: _transitionType,
+        openBuilder: (BuildContext context, VoidCallback _) {
+          return const FormPage(
+            title: 'Adicionar Contato',
+          );
+        },
+        closedElevation: 6.0,
+        closedShape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(
+            Radius.circular(15),
+          ),
+        ),
+        onClosed: (result) {
+          if (result == true) {
+            fetchData();
+          }
+        },
+        closedColor: Theme.of(context).colorScheme.primaryContainer,
+        closedBuilder: (BuildContext context, VoidCallback openContainer) {
+          return SizedBox(
+            height: kFabDimension,
+            width: kFabDimension,
+            child: Center(
+              child: Icon(
+                Icons.add,
+                color: Theme.of(context).colorScheme.onPrimaryContainer,
               ),
             ),
-          ).then((result) {
-            if (result == true) {
-              fetchData();
-            }
-          });
+          );
         },
-        child: const Icon(Icons.add),
       ),
     );
   }
@@ -193,7 +210,8 @@ class _MyHomePageState extends State<MyHomePage> {
       key: ValueKey(dataList[index]),
       leadingActions: [
         SwipeAction(
-            content: const Row(children: [
+          content: const Row(
+            children: [
               Icon(
                 Icons.edit_outlined,
                 color: Colors.white,
@@ -202,25 +220,29 @@ class _MyHomePageState extends State<MyHomePage> {
                 'Editar',
                 style: TextStyle(color: Colors.white),
               ),
-            ]),
-            performsFirstActionWithFullSwipe: true,
-            forceAlignmentToBoundary: true,
-            color: const Color(0xFF7BC043),
-            onTap: (handler) async {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => FormPage(
-                    contact: dataList[index],
-                    title: 'Editar Contato',
-                  ),
+            ],
+          ),
+          performsFirstActionWithFullSwipe: true,
+          forceAlignmentToBoundary: true,
+          color: const Color(0xFF7BC043),
+          onTap: (handler) async {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => FormPage(
+                  contact: dataList[index],
+                  title: 'Editar Contato',
                 ),
-              ).then((result) {
+              ),
+            ).then(
+              (result) {
                 if (result == true) {
                   fetchData();
                 }
-              });
-            }),
+              },
+            );
+          },
+        ),
       ],
       trailingActions: [
         SwipeAction(
@@ -248,17 +270,32 @@ class _MyHomePageState extends State<MyHomePage> {
           },
         ),
       ],
-      child: GestureDetector(
-        onTap: () {
-          _navigateAndDisplayContactDetails(context, dataList[index]);
+      child: OpenContainer<bool>(
+        transitionType: _transitionType,
+        transitionDuration: const Duration(milliseconds: 500),
+        openBuilder: (BuildContext _, VoidCallback openContainer) {
+          detailedContact = dataList[index];
+          return ContactDetailsPage(
+            contactParam: dataList[index],
+          );
         },
-        child: ListTile(
-          leading: CircleAvatarWidget(
-            contact: dataList[index],
-          ),
-          title: Text(dataList[index]['name']),
-          subtitle: Text(dataList[index]['phone']),
-        ),
+        tappable: false,
+        onClosed: (data) {
+          fetchData();
+          if (data != null && data) {
+            _showSnackBar(context, detailedContact);
+          }
+        },
+        closedBuilder: (BuildContext _, VoidCallback openContainer) {
+          return ListTile(
+            leading: CircleAvatarWidget(
+              contact: dataList[index],
+            ),
+            onTap: openContainer,
+            title: Text(dataList[index]['name']),
+            subtitle: Text(dataList[index]['phone']),
+          );
+        },
       ),
     );
   }
