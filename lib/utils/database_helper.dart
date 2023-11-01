@@ -2,7 +2,6 @@ import 'package:sqflite/sqflite.dart';
 import "package:path/path.dart" as p;
 
 class DatabaseHelper {
-  
   static Future<Database> _openDatabase() async {
     final databasePath = await getDatabasesPath();
     final path = p.join(databasePath, 'contacts_app.db');
@@ -22,8 +21,8 @@ class DatabaseHelper {
   ''');
   }
 
-  static Future<int> insertContact(
-      String name, String phone, String email, String business, String photo) async {
+  static Future<int> insertContact(String name, String phone, String email,
+      String business, String photo) async {
     final db = await _openDatabase();
     final data = {
       'name': name,
@@ -38,7 +37,9 @@ class DatabaseHelper {
   static Future<List<Map<String, dynamic>>> getData() async {
     final db = await _openDatabase();
 
-    return await db.query('contacts', orderBy: 'name');
+    // return await db.query('contacts', orderBy: 'name COLLATE NOCASE');
+    return await db
+        .rawQuery('SELECT * FROM contacts order by name COLLATE NOCASE');
   }
 
   static Future<int> deleteData(int id) async {
