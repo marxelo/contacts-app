@@ -2,6 +2,7 @@ import 'package:animations/animations.dart';
 import 'package:contacts_app/utils/database_helper.dart';
 import 'package:contacts_app/pages/form_page.dart';
 import 'package:contacts_app/utils/constants.dart';
+import 'package:contacts_app/utils/fake_data.dart';
 import 'package:flutter/material.dart';
 import 'package:contacts_app/pages/contact_details_page.dart';
 import 'package:flutter_swipe_action_cell/flutter_swipe_action_cell.dart';
@@ -95,25 +96,6 @@ class _MyHomePageState extends State<MyHomePage> {
       );
   }
 
-  Future<void> _navigateAndDisplayContactDetails(
-      BuildContext context, Map<String, dynamic> contact) async {
-    // Navigator.push returns a Future that completes after calling
-    // Navigator.pop on the Selection Screen.
-    await Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => ContactDetailsPage(
-          contactParam: contact,
-        ),
-      ),
-    ).then((result) {
-      fetchData();
-      if (result != null && result) {
-        _showSnackBar(context, contact);
-      }
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -151,11 +133,12 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             ),
           ),
-          const SliverToBoxAdapter(
+          SliverToBoxAdapter(
             child: SizedBox(
-              height: 30,
+              height: dataList.isNotEmpty ? 30 : 420,
               child: Center(
-                child: Text(''),
+                child:
+                    dataList.isNotEmpty ? const Text('') : _noContacts(context),
               ),
             ),
           ),
@@ -171,7 +154,7 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       floatingActionButton: OpenContainer(
         transitionType: _transitionType,
-           transitionDuration: const Duration(
+        transitionDuration: const Duration(
           milliseconds: kAnimationMillisecondsDuration,
         ),
         openBuilder: (BuildContext context, VoidCallback _) {
@@ -191,6 +174,7 @@ class _MyHomePageState extends State<MyHomePage> {
           }
         },
         closedColor: Theme.of(context).colorScheme.primaryContainer,
+        tappable: true,
         closedBuilder: (BuildContext context, VoidCallback openContainer) {
           return SizedBox(
             height: kFabDimension,
@@ -303,6 +287,112 @@ class _MyHomePageState extends State<MyHomePage> {
             subtitle: Text(dataList[index]['phone']),
           );
         },
+      ),
+    );
+  }
+
+  Widget _noContacts(BuildContext context) {
+    return SizedBox(
+      child: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Text(
+              'Sem contatos cadastrados',
+              style: TextStyle(fontSize: 25),
+            ),
+            const SizedBox(height: 25),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                const Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    'Instruções',
+                    style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
+                  ),
+                ),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: RichText(
+                    text: const TextSpan(
+                      style: TextStyle(color: Colors.black),
+                      children: [
+                        TextSpan(
+                            text: '- Cadastrar: ',
+                            style: TextStyle(fontWeight: FontWeight.bold)),
+                        TextSpan(text: 'toque no botão + no canto inferior'),
+                      ],
+                    ),
+                  ),
+                ),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: RichText(
+                    text: const TextSpan(
+                      style: TextStyle(color: Colors.black),
+                      children: [
+                        TextSpan(
+                            text: '- Editar: ',
+                            style: TextStyle(fontWeight: FontWeight.bold)),
+                        TextSpan(
+                            text: 'deslize o contato da esquerda para direita'),
+                      ],
+                    ),
+                  ),
+                ),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: RichText(
+                    text: const TextSpan(
+                      style: TextStyle(color: Colors.black),
+                      children: [
+                        TextSpan(
+                            text: '- Excluir: ',
+                            style: TextStyle(fontWeight: FontWeight.bold)),
+                        TextSpan(
+                            text: 'deslize o contato da direita para esquerda'),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 25),
+            Container(
+              height: 120,
+              width: 360,
+              decoration: const BoxDecoration(
+                color: Color.fromARGB(76, 199, 198, 198),
+                borderRadius: BorderRadius.all(
+                  Radius.circular(20),
+                ),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(30.0, 5.0, 30.0, 5.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text('Conheça o potencial do app rapidamente'),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    ElevatedButton.icon(
+                      onPressed: () async {
+                        await FakeData.generateFakedata();
+                        // print('after $res');
+                        fetchData();
+                      },
+                      icon: const Icon(Icons.people),
+                      label: const Text('Cadastrar Contactos Fictícios'),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
