@@ -46,7 +46,7 @@ class _ContactDetailsPageState extends State<ContactDetailsPage> {
   void _delete(int id) async {
     await DatabaseHelper.deleteData(id);
 
-    if (context.mounted) Navigator.pop(context, true);
+    if (context.mounted) Navigator.pop(context, contact);
   }
 
   void fetchUpdatedData() async {

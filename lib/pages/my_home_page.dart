@@ -259,7 +259,7 @@ class _MyHomePageState extends State<MyHomePage> {
           },
         ),
       ],
-      child: OpenContainer<bool>(
+      child: OpenContainer<Map<String, dynamic>>(
         transitionType: _transitionType,
         transitionDuration: const Duration(
           milliseconds: kAnimationMillisecondsDuration,
@@ -270,10 +270,10 @@ class _MyHomePageState extends State<MyHomePage> {
             contactParam: dataList[index],
           );
         },
-        tappable: false,
         onClosed: (data) {
           fetchData();
-          if (data != null && data) {
+          if (data != null) {
+            detailedContact = data;
             _showSnackBar(context, detailedContact);
           }
         },
@@ -282,7 +282,6 @@ class _MyHomePageState extends State<MyHomePage> {
             leading: CircleAvatarWidget(
               contact: dataList[index],
             ),
-            onTap: openContainer,
             title: Text(dataList[index]['name']),
             subtitle: Text(dataList[index]['phone']),
           );
