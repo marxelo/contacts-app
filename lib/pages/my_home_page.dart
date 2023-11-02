@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:contacts_app/pages/contact_details_page.dart';
 import 'package:flutter_swipe_action_cell/flutter_swipe_action_cell.dart';
 import 'package:contacts_app/components/circle_avatar_widget.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
@@ -24,6 +25,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   late SwipeActionController controller;
   late Contact detailedContact;
+  bool isLoading = false;
 
   @override
   void initState() {
@@ -36,8 +38,10 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _fetchContacts() async {
-    final List<Contact> kontactList = await DatabaseHelper.getContacts();
+    isLoading = true;
 
+    final List<Contact> kontactList = await DatabaseHelper.getContacts();
+    isLoading = false;
     setState(() {
       contacts = kontactList;
     });
@@ -112,11 +116,13 @@ class _MyHomePageState extends State<MyHomePage> {
             shadowColor: Colors.black38,
             surfaceTintColor: Colors.white,
             flexibleSpace: FlexibleSpaceBar(
-              centerTitle: false,
+              // centerTitle: true,
               titlePadding: const EdgeInsets.only(left: 10),
               title: const Text(
                 'Contatos',
-                style: TextStyle(color: Colors.black87),
+                style: TextStyle(
+                  color: Colors.black87,
+                ),
               ),
               expandedTitleScale: 2.0,
               background: AnimatedContainer(
@@ -138,7 +144,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
           SliverToBoxAdapter(
             child: SizedBox(
-              height: contacts.isNotEmpty ? 30 : 420,
+              height: contacts.isNotEmpty ? 30 : 800,
               child: Center(
                 child:
                     contacts.isNotEmpty ? const Text('') : _noContacts(context),
@@ -184,7 +190,7 @@ class _MyHomePageState extends State<MyHomePage> {
             width: kFabDimension,
             child: Center(
               child: Icon(
-                Icons.add,
+                Icons.person_add_alt_outlined,
                 color: Theme.of(context).colorScheme.onPrimaryContainer,
               ),
             ),
@@ -294,108 +300,122 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Widget _noContacts(BuildContext context) {
-    return SizedBox(
-      child: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Text(
-              'Sem contatos cadastrados',
-              style: TextStyle(fontSize: 25),
-            ),
-            const SizedBox(height: 25),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                const Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    'Instruções',
-                    style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
+    return isLoading
+        ? Center(
+            child: LoadingAnimationWidget.horizontalRotatingDots(
+            color: Theme.of(context).colorScheme.primaryContainer,
+            size: 50,
+          ))
+        : SizedBox(
+            child: Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  const Text(
+                    'Sem contatos cadastrados',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 25),
                   ),
-                ),
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: RichText(
-                    text: const TextSpan(
-                      style: TextStyle(color: Colors.black),
-                      children: [
-                        TextSpan(
-                            text: '- Cadastrar: ',
-                            style: TextStyle(fontWeight: FontWeight.bold)),
-                        TextSpan(text: 'toque no botão + no canto inferior'),
-                      ],
+                  // const SizedBox(height: 25),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      const Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          'Instruções',
+                          style: TextStyle(
+                              fontWeight: FontWeight.w700, fontSize: 16),
+                        ),
+                      ),
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: RichText(
+                          text: const TextSpan(
+                            style: TextStyle(color: Colors.black),
+                            children: [
+                              TextSpan(
+                                  text: '- Cadastrar: ',
+                                  style:
+                                      TextStyle(fontWeight: FontWeight.bold)),
+                              TextSpan(text: 'toque no botão '),
+                              WidgetSpan(
+                                child: Icon(Icons.person_add_alt_outlined,
+                                    size: 18),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: RichText(
+                          text: const TextSpan(
+                            style: TextStyle(color: Colors.black),
+                            children: [
+                              TextSpan(
+                                  text: '- Editar: ',
+                                  style:
+                                      TextStyle(fontWeight: FontWeight.bold)),
+                              TextSpan(
+                                  text:
+                                      'deslize o contato da esquerda para direita'),
+                            ],
+                          ),
+                        ),
+                      ),
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: RichText(
+                          text: const TextSpan(
+                            style: TextStyle(color: Colors.black),
+                            children: [
+                              TextSpan(
+                                  text: '- Excluir: ',
+                                  style:
+                                      TextStyle(fontWeight: FontWeight.bold)),
+                              TextSpan(
+                                  text:
+                                      'deslize o contato da direita para esquerda'),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  Container(
+                    height: 150,
+                    width: 400,
+                    decoration: kGreyContainerBoxDecoration,
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Text(
+                            'Clique no botão abaixo e tenha a experiência completa do app rapidamente',
+                            textAlign: TextAlign.center,
+                          ),
+                          ElevatedButton.icon(
+                            onPressed: () async {
+                              setState(() {
+                                isLoading = true;
+                              });
+                              await FakeData.generateFakedata();
+                              // print('after $res');
+                              fetchData();
+                            },
+                            icon: const Icon(Icons.people),
+                            label: const Text('Cadastrar Contactos fictícios'),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: RichText(
-                    text: const TextSpan(
-                      style: TextStyle(color: Colors.black),
-                      children: [
-                        TextSpan(
-                            text: '- Editar: ',
-                            style: TextStyle(fontWeight: FontWeight.bold)),
-                        TextSpan(
-                            text: 'deslize o contato da esquerda para direita'),
-                      ],
-                    ),
-                  ),
-                ),
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: RichText(
-                    text: const TextSpan(
-                      style: TextStyle(color: Colors.black),
-                      children: [
-                        TextSpan(
-                            text: '- Excluir: ',
-                            style: TextStyle(fontWeight: FontWeight.bold)),
-                        TextSpan(
-                            text: 'deslize o contato da direita para esquerda'),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 25),
-            Container(
-              height: 120,
-              width: 360,
-              decoration: const BoxDecoration(
-                color: Color.fromARGB(76, 199, 198, 198),
-                borderRadius: BorderRadius.all(
-                  Radius.circular(20),
-                ),
+                ],
               ),
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(30.0, 5.0, 30.0, 5.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text('Conheça o potencial do app rapidamente'),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    ElevatedButton.icon(
-                      onPressed: () async {
-                        await FakeData.generateFakedata();
-                        // print('after $res');
-                        fetchData();
-                      },
-                      icon: const Icon(Icons.people),
-                      label: const Text('Cadastrar Contactos Fictícios'),
-                    ),
-                  ],
-                ),
-              ),
             ),
-          ],
-        ),
-      ),
-    );
+          );
   }
 }

@@ -7,7 +7,7 @@ class FakeData {
   static Future<bool> generateFakedata() async {
     List<Contact> fakeContactList = [
       Contact(
-          name: 'Ana Silva',
+          name: 'Ana (Vovó 👵🏼)',
           phone: '+55(11) 987654-3210',
           email: 'ana.silva@example.com',
           business: 'Acme S/A',
@@ -43,7 +43,7 @@ class FakeData {
           business: 'JKL S/A',
           photo: 'a06.png'),
       Contact(
-          name: 'Carolina Menezes',
+          name: 'Carolina Menezes 🫶',
           phone: '+55(71) 987654-3216',
           email: 'carolina.menezes@example.com',
           business: 'MNO Ltda',
@@ -85,7 +85,7 @@ class FakeData {
           business: 'XYZ S/A',
           photo: 'a13.png'),
       Contact(
-          name: 'Neuza Carvalho',
+          name: 'Neuza Carvalho (Vovó 👵🏿)',
           phone: '+55(31) 987654-3223',
           email: 'Neuza.carvalho@example.com',
           business: 'ABC S/A',
@@ -97,7 +97,7 @@ class FakeData {
           business: 'DEF S/A',
           photo: 'a15.png'),
       Contact(
-          name: 'Marcelo Rodrigues',
+          name: 'Vô Juca 👴🏽',
           phone: '+55(51) 987654-3225',
           email: 'marcelo.rodrigues@example.com',
           business: 'GHI Ltda',
@@ -139,30 +139,35 @@ class FakeData {
           business: 'VWX S/A',
           photo: ''), // aki
       Contact(
-          name: '123 Milhos',
+          name: '123 Milhos 🌽🌽🌽',
           phone: '+55(11) 987654-3233',
           email: '123milhos@123milhos.com',
-          business: '123 milhos & Pamanhas',
+          business: '123 milhos & Pamonhas',
           photo: 'a00.png'),
     ];
 
-    for (Contact fakeData in fakeContactList) {
-      String photo = '';
-
-      if (fakeData.photo.isNotEmpty) {
-        ByteData bytes =
-            await rootBundle.load('assets/samples/${fakeData.photo}');
-
-        var buffer = bytes.buffer;
-
-        photo = base64.encode(Uint8List.view(buffer));
-      }
-
-      fakeData.photo = photo;
-
-      await DatabaseHelper.insertContact(fakeData);
+    for (Contact fakeContact in fakeContactList) {
+      await insertFakeContact(fakeContact);
     }
 
     return true;
+  }
+
+  static Future<void> insertFakeContact(Contact fakeContact) async {
+    String photo = '';
+
+    if (fakeContact.photo.isNotEmpty) {
+      ByteData bytes =
+          await rootBundle.load('assets/samples/${fakeContact.photo}');
+
+      var buffer = bytes.buffer;
+
+      photo = base64.encode(Uint8List.view(buffer));
+    }
+
+    fakeContact.photo = photo;
+
+    await DatabaseHelper.insertContact(fakeContact);
+    
   }
 }

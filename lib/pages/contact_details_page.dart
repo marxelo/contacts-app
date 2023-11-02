@@ -163,88 +163,98 @@ class _ContactDetailsPageState extends State<ContactDetailsPage> {
             const SizedBox(
               height: 50,
             ),
-            Container(
-              height: 240,
-              width: 360,
-              decoration: const BoxDecoration(
-                color: Color.fromARGB(76, 199, 198, 198),
-                borderRadius: BorderRadius.all(
-                  Radius.circular(20),
-                ),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    const Row(
-                      children: [
-                        Text(
-                          'Informações do Contato',
-                          textAlign: TextAlign.left,
-                          style: TextStyle(
-                              fontSize: 22,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.black87),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 32),
-                    Row(
-                      children: [
-                        const Icon(
-                          Icons.phone_rounded,
-                          color: kDetailsIconColor,
-                        ),
-                        const SizedBox(
-                          width: 5,
-                        ),
-                        Text(
-                          kontact.phone.toString().trim().isNotEmpty
-                              ? kontact.phone
-                              : 'Não cadastrado',
-                          style: kDetailsTextStyle,
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 25),
-                    Row(
-                      children: [
-                        // const Text('E-mail: '),
-                        const Icon(
-                          Icons.email_rounded,
-                          color: kDetailsIconColor,
-                        ),
-                        const SizedBox(
-                          width: 5,
-                        ),
-                        Text(
-                          kontact.email.toString().trim().isNotEmpty
-                              ? kontact.email
-                              : 'Não cadastrado',
-                          style: kDetailsTextStyle,
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 25),
-                    Row(
-                      children: [
-                        const Icon(
-                          Icons.business_center_rounded,
-                          color: kDetailsIconColor,
-                        ),
-                        const SizedBox(
-                          width: 5,
-                        ),
-                        Text(
-                          kontact.business.toString().trim().isNotEmpty
-                              ? kontact.business
-                              : 'Não cadastrado',
-                          style: kDetailsTextStyle,
-                        ),
-                      ],
-                    ),
-                  ],
+            Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: Container(
+                constraints: const BoxConstraints(
+                    minHeight: 100,
+                    minWidth: 300,
+                    maxWidth: 400,
+                    maxHeight: double.infinity),
+                decoration: kGreyContainerBoxDecoration,
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      const Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              'Informações do Contato',
+                              textAlign: TextAlign.left,
+                              overflow: TextOverflow.clip,
+                              style: TextStyle(
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.black87),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 32),
+                      Row(
+                        children: [
+                          const Icon(
+                            Icons.phone_rounded,
+                            color: kDetailsIconColor,
+                          ),
+                          const SizedBox(
+                            width: 5,
+                          ),
+                          Expanded(
+                            child: Text(
+                              kontact.phone.toString().trim().isNotEmpty
+                                  ? kontact.phone
+                                  : 'Não cadastrado',
+                              style: kDetailsTextStyle,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 25),
+                      Row(
+                        children: [
+                          // const Text('E-mail: '),
+                          const Icon(
+                            Icons.email_rounded,
+                            color: kDetailsIconColor,
+                          ),
+                          const SizedBox(
+                            width: 5,
+                          ),
+                          Expanded(
+                            child: Text(
+                              kontact.email.toString().trim().isNotEmpty
+                                  ? kontact.email
+                                  : 'Não cadastrado',
+                              style: kDetailsTextStyle,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 25),
+                      Row(
+                        children: [
+                          const Icon(
+                            Icons.business_center_rounded,
+                            color: kDetailsIconColor,
+                          ),
+                          const SizedBox(
+                            width: 5,
+                          ),
+                          Expanded(
+                            child: Text(
+                              kontact.business.toString().trim().isNotEmpty
+                                  ? kontact.business
+                                  : 'Não cadastrado',
+                              style: kDetailsTextStyle,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
