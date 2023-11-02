@@ -229,7 +229,7 @@ class _MyHomePageState extends State<MyHomePage> {
               MaterialPageRoute(
                 builder: (context) => FormPage(
                   contact: contacts[index],
-                  title: 'Editar Contato',
+                  title: 'Editar',
                 ),
               ),
             ).then(
@@ -245,9 +245,6 @@ class _MyHomePageState extends State<MyHomePage> {
       trailingActions: [
         SwipeAction(
           content: const Row(children: [
-            SizedBox(
-              width: 12,
-            ),
             Icon(
               Icons.delete_outline,
               color: Colors.white,
@@ -385,8 +382,11 @@ class _MyHomePageState extends State<MyHomePage> {
                     ],
                   ),
                   Container(
-                    height: 150,
-                    width: 400,
+                    constraints: const BoxConstraints(
+                        minHeight: 150,
+                        minWidth: 300,
+                        maxWidth: 400,
+                        maxHeight: double.infinity),
                     decoration: kGreyContainerBoxDecoration,
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
@@ -413,6 +413,9 @@ class _MyHomePageState extends State<MyHomePage> {
                       ),
                     ),
                   ),
+                  const SizedBox(
+                    height: 100,
+                  )
                 ],
               ),
             ),

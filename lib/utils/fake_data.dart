@@ -13,9 +13,9 @@ class FakeData {
           business: 'Acme S/A',
           photo: 'a01.png'),
       Contact(
-          name: 'Antônio Souza',
+          name: 'Pedro Souza',
           phone: '+55(21) 987654-3211',
-          email: 'antonio.souza@example.com',
+          email: 'pedro.souza@example.com',
           business: 'XYZ S/A',
           photo: 'a02.png'),
       Contact(
@@ -25,9 +25,9 @@ class FakeData {
           business: 'ABC Ltda',
           photo: 'a03.png'),
       Contact(
-          name: 'Bernardo Oliveira',
+          name: 'Humberto Oliveira',
           phone: '+55(41) 987654-3213',
-          email: 'bernardo.oliveira@example.com',
+          email: 'humberto.oliveira@example.com',
           business: 'DEF S/A',
           photo: 'a04.png'),
       Contact(
@@ -73,9 +73,9 @@ class FakeData {
           business: 'YZ Ltda',
           photo: 'a18.png'),
       Contact(
-          name: 'Gabriela Silva',
+          name: 'Gaby (filha da Fernanda)',
           phone: '+55(21) 987654-3221',
-          email: 'gabriela.silva@example.com',
+          email: 'gabriela.gomes@example.com',
           business: 'Acme S/A',
           photo: 'a12.png'),
       Contact(
@@ -99,7 +99,7 @@ class FakeData {
       Contact(
           name: 'Vô Juca 👴🏽',
           phone: '+55(51) 987654-3225',
-          email: 'marcelo.rodrigues@example.com',
+          email: 'jose.rodrigues@example.com',
           business: 'GHI Ltda',
           photo: 'a16.png'),
       Contact(
@@ -109,7 +109,7 @@ class FakeData {
           business: 'MNO S/A',
           photo: 'a17.png'),
       Contact(
-          name: 'João Ferreira',
+          name: 'João Ferreira (Irmão Túlio)',
           phone: '+55(81) 987654-3228',
           email: 'joao.ferreira@example.com',
           business: 'PQR S/A',
@@ -127,9 +127,9 @@ class FakeData {
           business: 'VWX S/A',
           photo: 'a20.png'),
       Contact(
-          name: 'Ana Mendes',
+          name: 'Abgail Mendes',
           phone: '+55(11) 987654-3231',
-          email: 'ana.mendes@example.com',
+          email: 'abgail.mendes@example.com',
           business: 'VWX S/A',
           photo: ''), // aki
       Contact(

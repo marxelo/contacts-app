@@ -168,10 +168,12 @@ class _FormPageState extends State<FormPage> {
                     SizedBox(
                       width: 10,
                     ),
-                    Text(
-                      'Usar foto da galeria',
-                      style: TextStyle(
-                        fontSize: 16,
+                    Expanded(
+                      child: Text(
+                        'Usar foto da galeria',
+                        style: TextStyle(
+                          fontSize: 16, overflow: TextOverflow.clip
+                        ),
                       ),
                     ),
                   ],
