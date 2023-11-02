@@ -1,4 +1,5 @@
 import 'package:animations/animations.dart';
+import 'package:contacts_app/model/contact.dart';
 import 'package:contacts_app/utils/database_helper.dart';
 import 'package:contacts_app/pages/form_page.dart';
 import 'package:contacts_app/utils/constants.dart';
@@ -6,29 +7,28 @@ import 'package:contacts_app/utils/utils.dart';
 import 'package:flutter/material.dart';
 
 class ContactDetailsPage extends StatefulWidget {
-  const ContactDetailsPage({super.key, required this.contactParam});
+  const ContactDetailsPage({super.key, required this.contact});
 
-  final Map<String, dynamic> contactParam;
+  final Contact contact;
 
   @override
   State<ContactDetailsPage> createState() => _ContactDetailsPageState();
 }
 
 class _ContactDetailsPageState extends State<ContactDetailsPage> {
-  Map<String, dynamic> contact = {};
+  late Contact kontact;
   final ContainerTransitionType _transitionType =
       ContainerTransitionType.fadeThrough;
 
   @override
   void initState() {
     super.initState();
-    contact = widget.contactParam;
-    // fetchData();
+    kontact = widget.contact;
   }
 
   Widget getContactImageWidget() {
-    if (contact['photo'].toString().isNotEmpty) {
-      return Utils.imageFromBase64String(contact['photo'],
+    if (kontact.photo.toString().isNotEmpty) {
+      return Utils.imageFromBase64String(kontact.photo,
           width: kDetailsImageSize, height: kDetailsImageSize);
     }
     return Container(
@@ -44,17 +44,16 @@ class _ContactDetailsPageState extends State<ContactDetailsPage> {
   }
 
   void _delete(int id) async {
-    await DatabaseHelper.deleteData(id);
+    await DatabaseHelper.deleteContact(id);
 
-    if (context.mounted) Navigator.pop(context, contact);
+    if (context.mounted) Navigator.pop(context, kontact);
   }
 
-  void fetchUpdatedData() async {
-    final Map<String, dynamic>? updatedData =
-        await DatabaseHelper.getSingleData(contact['id']);
+  void fetchUpdatedData(int id) async {
+    final Contact? updatedData = await DatabaseHelper.getSingleContact(id);
 
     setState(() {
-      contact = updatedData!;
+      kontact = updatedData!;
     });
   }
 
@@ -70,7 +69,7 @@ class _ContactDetailsPageState extends State<ContactDetailsPage> {
             ),
             openBuilder: (BuildContext context, VoidCallback _) {
               return FormPage(
-                contact: contact,
+                contact: kontact,
                 title: 'Editar Contato',
               );
             },
@@ -82,7 +81,7 @@ class _ContactDetailsPageState extends State<ContactDetailsPage> {
             ),
             onClosed: (result) {
               if (result == true) {
-                fetchUpdatedData();
+                fetchUpdatedData(widget.contact.id!);
               }
             },
             closedColor: Colors.transparent,
@@ -111,8 +110,8 @@ class _ContactDetailsPageState extends State<ContactDetailsPage> {
                   color: Colors.black,
                   fontSize: kDeleteDialogFontSize - 2.0,
                 ),
-                content:
-                    Text('${contact["name"]} será removido de seus contatos'),
+                content: Text(
+                    '${widget.contact.name} será removido de seus contatos'),
                 actions: <Widget>[
                   TextButton(
                     onPressed: () => Navigator.pop(context, 'Cancel'),
@@ -125,7 +124,7 @@ class _ContactDetailsPageState extends State<ContactDetailsPage> {
                   ),
                   TextButton(
                     onPressed: () {
-                      _delete(contact['id']);
+                      _delete(widget.contact.id!);
                       Navigator.pop(context, 'OK');
                     },
                     child: const Text(
@@ -156,7 +155,7 @@ class _ContactDetailsPageState extends State<ContactDetailsPage> {
             Padding(
               padding: const EdgeInsets.all(16),
               child: Text(
-                contact['name'],
+                kontact.name,
                 style: const TextStyle(fontSize: 28),
                 textAlign: TextAlign.center,
               ),
@@ -201,8 +200,8 @@ class _ContactDetailsPageState extends State<ContactDetailsPage> {
                           width: 5,
                         ),
                         Text(
-                          contact['phone'].toString().trim().isNotEmpty
-                              ? contact['phone']
+                          kontact.phone.toString().trim().isNotEmpty
+                              ? kontact.phone
                               : 'Não cadastrado',
                           style: kDetailsTextStyle,
                         ),
@@ -220,8 +219,8 @@ class _ContactDetailsPageState extends State<ContactDetailsPage> {
                           width: 5,
                         ),
                         Text(
-                          contact['email'].toString().trim().isNotEmpty
-                              ? contact['email']
+                          kontact.email.toString().trim().isNotEmpty
+                              ? kontact.email
                               : 'Não cadastrado',
                           style: kDetailsTextStyle,
                         ),
@@ -238,8 +237,8 @@ class _ContactDetailsPageState extends State<ContactDetailsPage> {
                           width: 5,
                         ),
                         Text(
-                          contact['business'].toString().trim().isNotEmpty
-                              ? contact['business']
+                          kontact.business.toString().trim().isNotEmpty
+                              ? kontact.business
                               : 'Não cadastrado',
                           style: kDetailsTextStyle,
                         ),

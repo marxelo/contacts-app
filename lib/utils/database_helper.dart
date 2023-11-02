@@ -1,5 +1,6 @@
 import 'package:sqflite/sqflite.dart';
 import "package:path/path.dart" as p;
+import 'package:contacts_app/model/contact.dart';
 
 class DatabaseHelper {
   static Future<Database> _openDatabase() async {
@@ -21,34 +22,34 @@ class DatabaseHelper {
   ''');
   }
 
-  static Future<int> insertContact(String name, String phone, String email,
-      String business, String photo) async {
+  static Future<int?> insertContact(Contact contact) async {
     final db = await _openDatabase();
-    final data = {
-      'name': name,
-      'phone': phone,
-      'email': email,
-      'business': business,
-      'photo': photo,
-    };
-    return await db.insert('contacts', data);
+    contact.id = await db.insert('contacts', contact.toMap());
+    return contact.id;
   }
 
-  static Future<List<Map<String, dynamic>>> getData() async {
+  static Future<List<Contact>> getContacts() async {
     final db = await _openDatabase();
-
-    // return await db.query('contacts', orderBy: 'name COLLATE NOCASE');
-    return await db
+    List<Map> maps = await db
         .rawQuery('SELECT * FROM contacts order by name COLLATE NOCASE');
+    List<Contact> contacts = [];
+
+    if (maps.isNotEmpty) {
+      for (var map in maps) {
+        contacts.add(Contact.fromMap(Map<String, dynamic>.from(map)));
+      }
+    }
+
+    return contacts;
   }
 
-  static Future<int> deleteData(int id) async {
+  static Future<int> deleteContact(int id) async {
     final db = await _openDatabase();
 
     return await db.delete('contacts', where: 'id = ?', whereArgs: [id]);
   }
 
-  static Future<Map<String, dynamic>?> getSingleData(int id) async {
+  static Future<Contact?> getSingleContact(int id) async {
     final db = await _openDatabase();
     List<Map<String, dynamic>> result = await db.query(
       'contacts',
@@ -57,11 +58,12 @@ class DatabaseHelper {
       limit: 1,
     );
 
-    return result.isNotEmpty ? result.first : null;
+    return result.isNotEmpty ? Contact.fromMap(result.first) : null;
   }
 
-  static Future<int> updateData(int id, Map<String, dynamic> data) async {
+  static Future<int> updateContact(Contact contact) async {
     final db = await _openDatabase();
-    return await db.update('contacts', data, where: 'id = ?', whereArgs: [id]);
+    return await db.update('contacts', contact.toMap(),
+        where: 'id = ?', whereArgs: [contact.id]);
   }
 }

@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:contacts_app/enums/profile_pic_action.dart';
+import 'package:contacts_app/model/contact.dart';
 import 'package:contacts_app/utils/constants.dart';
 import 'package:contacts_app/utils/utils.dart';
 import 'package:flutter/material.dart';
@@ -12,7 +13,7 @@ final _formKey = GlobalKey<FormState>();
 class FormPage extends StatefulWidget {
   const FormPage({Key? key, this.contact, required this.title})
       : super(key: key);
-  final Map<String, dynamic>? contact;
+  final Contact? contact;
   final String title;
 
   @override
@@ -27,13 +28,10 @@ class _FormPageState extends State<FormPage> {
 
   late Future<File> imageFile;
   late Image image;
-  // late DBHelper dbHelper;
-  // late List<Photo> images;
   File? imagePicked;
   bool hasProfilePic = false;
   XFile? imageTSave;
   late String imageString = '';
-  Map<String, dynamic>? data2;
   bool contactPhotoChanged = false;
 
   String? validateEmail(String? email) {
@@ -51,12 +49,13 @@ class _FormPageState extends State<FormPage> {
 
   void fillPageElements() async {
     if (widget.contact != null) {
-      _nameController.text = widget.contact!['name'];
-      _phoneController.text = widget.contact!['phone'];
-      _emailController.text = widget.contact!['email'];
-      // _photoController.text = widget.contact!['photo'];
-      _businessController.text = widget.contact!['business'];
-      imageString = widget.contact!['photo'];
+
+      _nameController.text = widget.contact!.name;
+      _phoneController.text = widget.contact!.phone;
+      _emailController.text = widget.contact!.email;
+      _businessController.text = widget.contact!.business;
+      imageString = widget.contact!.photo;
+
       if (imageString.isNotEmpty) {
         hasProfilePic = true;
       }
@@ -91,17 +90,18 @@ class _FormPageState extends State<FormPage> {
     fillPageElements();
   }
 
-  void _updateData(BuildContext context) async {
-    Map<String, dynamic> data = {
-      'name': _nameController.text,
-      'phone': _phoneController.text,
-      'email': _emailController.text,
-      'business': _businessController.text,
-      'photo': imageString,
-    };
+
+  void _updateContact(BuildContext context) async {
+  
 
     if (widget.contact != null) {
-      await DatabaseHelper.updateData(widget.contact!['id'], data);
+      await DatabaseHelper.updateContact(Contact(
+          id: widget.contact!.id,
+          name: _nameController.text,
+          phone: _phoneController.text,
+          email: _emailController.text,
+          business: _businessController.text,
+          photo: imageString));
       if (context.mounted) Navigator.pop(context, true);
     }
   }
@@ -111,9 +111,14 @@ class _FormPageState extends State<FormPage> {
     final phone = _phoneController.text;
     final email = _emailController.text;
     final business = _businessController.text;
-    final photo =  imageString;
+    final photo = imageString;
 
-    await DatabaseHelper.insertContact(name, phone, email, business, photo);
+    await DatabaseHelper.insertContact(Contact(
+        name: name,
+        phone: phone,
+        email: email,
+        business: business,
+        photo: photo));
 
     if (context.mounted) Navigator.pop(context, true);
   }
@@ -220,10 +225,8 @@ class _FormPageState extends State<FormPage> {
         width: 250,
         fit: BoxFit.cover,
       );
-    } else if (widget.contact != null &&
-        // !contactPhotoChanged &&
-        imageString.trim().isNotEmpty) {
-      return Utils.imageFromBase64String(widget.contact!['photo'] ?? "");
+    } else if (widget.contact != null && imageString.trim().isNotEmpty) {
+      return Utils.imageFromBase64String(widget.contact!.photo);
     } else {
       return Container(
         height: 250,
@@ -387,7 +390,7 @@ class _FormPageState extends State<FormPage> {
                   onPressed: () {
                     if (_formKey.currentState!.validate()) {
                       if (widget.contact != null) {
-                        _updateData(context);
+                        _updateContact(context);
                       } else {
                         _saveData();
                       }

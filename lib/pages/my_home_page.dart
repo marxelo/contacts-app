@@ -1,4 +1,5 @@
 import 'package:animations/animations.dart';
+import 'package:contacts_app/model/contact.dart';
 import 'package:contacts_app/utils/database_helper.dart';
 import 'package:contacts_app/pages/form_page.dart';
 import 'package:contacts_app/utils/constants.dart';
@@ -19,9 +20,10 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   final ContainerTransitionType _transitionType = ContainerTransitionType.fade;
-  List<Map<String, dynamic>> dataList = [];
+  List<Contact> contacts = [];
+
   late SwipeActionController controller;
-  late Map<String, dynamic> detailedContact;
+  late Contact detailedContact;
 
   @override
   void initState() {
@@ -34,53 +36,54 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _fetchContacts() async {
-    final List<Map<String, dynamic>> contactList =
-        await DatabaseHelper.getData();
+    final List<Contact> kontactList = await DatabaseHelper.getContacts();
 
     setState(() {
-      dataList = contactList;
+      contacts = kontactList;
     });
   }
 
-  void _delete(Map<String, dynamic> contact) async {
-    await DatabaseHelper.deleteData(contact['id']);
+  void _delete(Contact contact) async {
+    await DatabaseHelper.deleteContact(contact.id!);
 
-    final List<Map<String, dynamic>> updatedData =
-        await DatabaseHelper.getData();
+    final List<Contact> updatedData = await DatabaseHelper.getContacts();
 
     setState(() {
-      dataList = updatedData;
+      contacts = updatedData;
     });
   }
 
-  void _undoDelete(Map<String, dynamic> contact) async {
-    final name = contact['name'];
-    final phone = contact['phone'];
-    final email = contact['email'];
-    final business = contact['business'];
-    final photo = contact['photo'];
+  void _undoDelete(Contact contact) async {
+    final name = contact.name;
+    final phone = contact.phone;
+    final email = contact.email;
+    final business = contact.business;
+    final photo = contact.photo;
 
-    await DatabaseHelper.insertContact(name, phone, email, business, photo);
+    await DatabaseHelper.insertContact(Contact(
+        name: name,
+        phone: phone,
+        email: email,
+        business: business,
+        photo: photo));
 
-    final List<Map<String, dynamic>> updatedData =
-        await DatabaseHelper.getData();
+    final List<Contact> updatedData = await DatabaseHelper.getContacts();
 
     setState(() {
-      dataList = updatedData;
+      contacts = updatedData;
     });
   }
 
   void fetchData() async {
-    final List<Map<String, dynamic>> updatedData =
-        await DatabaseHelper.getData();
+    final List<Contact> updatedData = await DatabaseHelper.getContacts();
 
     setState(() {
-      dataList = updatedData;
+      contacts = updatedData;
     });
   }
 
   Future<void> _showSnackBar(
-      BuildContext context, Map<String, dynamic> deletedContact) async {
+      BuildContext context, Contact deletedContact) async {
     ScaffoldMessenger.of(context)
       ..removeCurrentSnackBar()
       ..showSnackBar(
@@ -135,10 +138,10 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
           SliverToBoxAdapter(
             child: SizedBox(
-              height: dataList.isNotEmpty ? 30 : 420,
+              height: contacts.isNotEmpty ? 30 : 420,
               child: Center(
                 child:
-                    dataList.isNotEmpty ? const Text('') : _noContacts(context),
+                    contacts.isNotEmpty ? const Text('') : _noContacts(context),
               ),
             ),
           ),
@@ -147,7 +150,7 @@ class _MyHomePageState extends State<MyHomePage> {
               (BuildContext context, int index) {
                 return _item(context, index);
               },
-              childCount: dataList.length,
+              childCount: contacts.length,
             ),
           ),
         ],
@@ -196,7 +199,7 @@ class _MyHomePageState extends State<MyHomePage> {
       controller: controller,
       fullSwipeFactor: kfullSwipeFactor,
       index: index,
-      key: ValueKey(dataList[index]),
+      key: ValueKey(contacts[index]),
       leadingActions: [
         SwipeAction(
           content: const Row(
@@ -219,7 +222,7 @@ class _MyHomePageState extends State<MyHomePage> {
               context,
               MaterialPageRoute(
                 builder: (context) => FormPage(
-                  contact: dataList[index],
+                  contact: contacts[index],
                   title: 'Editar Contato',
                 ),
               ),
@@ -252,22 +255,22 @@ class _MyHomePageState extends State<MyHomePage> {
           forceAlignmentToBoundary: true,
           color: const Color(0xFFFE4A49),
           onTap: (handler) async {
-            var deletedContact = dataList[index];
-            _delete(dataList[index]);
+            var deletedContact = contacts[index];
+            _delete(contacts[index]);
             setState(() {});
             _showSnackBar(context, deletedContact);
           },
         ),
       ],
-      child: OpenContainer<Map<String, dynamic>>(
+      child: OpenContainer<Contact>(
         transitionType: _transitionType,
         transitionDuration: const Duration(
           milliseconds: kAnimationMillisecondsDuration,
         ),
         openBuilder: (BuildContext _, VoidCallback openContainer) {
-          detailedContact = dataList[index];
+          detailedContact = contacts[index];
           return ContactDetailsPage(
-            contactParam: dataList[index],
+            contact: contacts[index],
           );
         },
         onClosed: (data) {
@@ -280,10 +283,10 @@ class _MyHomePageState extends State<MyHomePage> {
         closedBuilder: (BuildContext _, VoidCallback openContainer) {
           return ListTile(
             leading: CircleAvatarWidget(
-              contact: dataList[index],
+              contact: contacts[index],
             ),
-            title: Text(dataList[index]['name']),
-            subtitle: Text(dataList[index]['phone']),
+            title: Text(contacts[index].name),
+            subtitle: Text(contacts[index].phone),
           );
         },
       ),
