@@ -5,6 +5,7 @@ import 'package:contacts_app/pages/form_page.dart';
 import 'package:contacts_app/utils/constants.dart';
 import 'package:contacts_app/utils/utils.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ContactDetailsPage extends StatefulWidget {
   const ContactDetailsPage({super.key, required this.contact});
@@ -16,6 +17,9 @@ class ContactDetailsPage extends StatefulWidget {
 }
 
 class _ContactDetailsPageState extends State<ContactDetailsPage> {
+  bool _hasCallSupport = false;
+  Future<void>? _launched;
+  String _phone = '';
   late Contact kontact;
   final ContainerTransitionType _transitionType =
       ContainerTransitionType.fadeThrough;
@@ -24,6 +28,11 @@ class _ContactDetailsPageState extends State<ContactDetailsPage> {
   void initState() {
     super.initState();
     kontact = widget.contact;
+    canLaunchUrl(Uri(scheme: 'tel', path: '123')).then((bool result) {
+      setState(() {
+        _hasCallSupport = result;
+      });
+    });
   }
 
   Widget getContactImageWidget() {
@@ -55,6 +64,30 @@ class _ContactDetailsPageState extends State<ContactDetailsPage> {
     setState(() {
       kontact = updatedData!;
     });
+  }
+
+  Future<void> _makePhoneCall(String phoneNumber) async {
+    final Uri launchUri = Uri(
+      scheme: 'tel',
+      path: phoneNumber,
+    );
+    await launchUrl(launchUri);
+  }
+
+  Future<void> _sentSms(String phoneNumber) async {
+    final Uri launchUri = Uri(
+      scheme: 'sms',
+      path: phoneNumber,
+    );
+    await launchUrl(launchUri);
+  }
+
+  Future<void> _sendEmail(String emailAddress) async {
+    final Uri launchUri = Uri(
+      scheme: 'mailto',
+      path: emailAddress,
+    );
+    await launchUrl(launchUri);
   }
 
   @override
@@ -210,6 +243,32 @@ class _ContactDetailsPageState extends State<ContactDetailsPage> {
                               style: kDetailsTextStyle,
                             ),
                           ),
+                          if (kontact.phone.toString().trim().isNotEmpty)
+                            IconButton(
+                              onPressed: _hasCallSupport
+                                  ? () => setState(() {
+                                        _launched = _makePhoneCall(
+                                            kontact.phone.toString().trim());
+                                      })
+                                  : null,
+                              icon: const Icon(
+                                Icons.phone_outlined,
+                                color: Colors.blue,
+                              ),
+                            ),
+                          if (kontact.phone.toString().trim().isNotEmpty)
+                            IconButton(
+                              onPressed: _hasCallSupport
+                                  ? () => setState(() {
+                                        _launched = _sentSms(
+                                            kontact.phone.toString().trim());
+                                      })
+                                  : null,
+                              icon: const Icon(
+                                Icons.sms_outlined,
+                                color: Colors.blue,
+                              ),
+                            ),
                         ],
                       ),
                       const SizedBox(height: 25),
@@ -231,6 +290,19 @@ class _ContactDetailsPageState extends State<ContactDetailsPage> {
                               style: kDetailsTextStyle,
                             ),
                           ),
+                          if (kontact.email.toString().trim().isNotEmpty)
+                            IconButton(
+                              onPressed: () => setState(
+                                () {
+                                  _launched = _sendEmail(
+                                      kontact.email.toString().trim());
+                                },
+                              ),
+                              icon: const Icon(
+                                Icons.email_outlined,
+                                color: Colors.blue,
+                              ),
+                            )
                         ],
                       ),
                       const SizedBox(height: 25),
